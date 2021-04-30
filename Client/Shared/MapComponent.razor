@@ -1,0 +1,86 @@
+﻿@using www.pwa.Shared
+<style>
+    .path {
+        stroke-dasharray: @length;
+        stroke-dashoffset: @length;
+        animation-name: dash;
+        animation-duration: 5s;
+        animation-fill-mode: forwards;
+        animation-timing-function: linear;
+    }
+
+    .pathclass {
+        stroke-dasharray: @lengthclass;
+        stroke-dashoffset: @lengthclass;
+        animation-name: dashclass;
+        animation-duration: 5s;
+        animation-fill-mode: forwards;
+        animation-timing-function: linear;
+    }
+
+    .pathent {
+        stroke-dasharray: @lengthent;
+        stroke-dashoffset: @lengthent;
+        animation-name: dashent;
+        animation-duration: 5s;
+        animation-fill-mode: forwards;
+        animation-timing-function: linear;
+    }
+
+    @@keyframes dash {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @@keyframes dashclass {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    @@keyframes dashent {
+        to {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    .text-block {
+        position: absolute;
+        top: 10px;
+        left: 50px;
+        background-color: rgba(255, 216, 0, 0.6);
+        padding: 10px;
+    }
+</style>
+
+@*<div>
+    <input type="number" @bind="@debug_current" /> <button type="button" class="btn btn-primary" @onclick="DebugSubmit">Submit</button>
+</div>*@
+<div class="position-relative mb-5" style="max-width: @(width)px; max-height: @(height)px;">
+    <h5 class="text-primary rounded p-1 mb-0" style="background-color: rgba(253, 254, 254, 1);">Es wurden @(CurrentDistance) von @WwwData.TotalDistance km zurückgelegt.</h5>
+    <div class="position-absolute w-100 h-auto" style="z-index: 14;">
+        <svg id="map" width="100%" preserveAspectRatio="xMidYMid meet" viewBox="0 0 @width @height">
+            <path id="totalpath" stroke="#0341fc" fill="transparent" stroke-width="4" d="@totaldata" />
+
+            @if (showPath)
+            {
+                <path id="currentpath" class="path" stroke="#a103fc" fill="transparent" stroke-width="6" d="@currentdata" />
+                @if (!String.IsNullOrEmpty(classdata))
+                {
+                    <path id="classpath" class="pathclass" stroke="yellow" fill="transparent" stroke-width="7" d="@classdata" />
+                }
+                @if (!String.IsNullOrEmpty(entdata))
+                {
+                    <path id="entpath" class="pathent" stroke="green" fill="transparent" stroke-width="8" d="@entdata" />
+                }
+            }
+        </svg>
+    </div>
+    <div>
+        <img class="img-fluid" src="@imagesrc" />
+    </div>
+    <div class="float-right">
+        <small class="text-muted">Map data @("©") Google Data SIO, NOAA, U.S. Navy, NGA, GEBCO Landsat / Copernicus IBCAO U.S. Geological Survey</small>
+    </div>
+</div>

@@ -1,0 +1,208 @@
+﻿@using www.pwa.Shared
+@using www.pwa.Client.Services
+@inject DataService dataService
+@inject IJSRuntime js 
+
+@if (runInfo != null)
+{
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Gesamte Distanz</th>
+                <th>Relative Distanz</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@runInfo.Ent</td>
+                <td>@runInfo.Dist</td>
+                <td>@MathF.Round(runInfo.Dist / runInfo.Count, 2)</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+@if (runInfos.Any())
+{
+<h5>Klassen der Schule @runInfo.Ent</h5>
+<table class="table table-dark table-hover">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Gesamte Distanz</th>
+            <th>Relative Distanz</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var info in runInfos.OrderByDescending(o => o.Dist))
+        {
+            <tr id="@info.Ent" @onclick="@( async => SchoolExpandRequest(info.Ent))">
+                @if (isAdmin)
+                {
+                    <td><button type="button" class="btn btn-sm btn-danger mr-2" @onclick="@( async => ClassDeleteRequest(info.Ent))" @onclick:stopPropagation="true">Delete</button> @info.Ent</td>
+                }
+                else
+                {
+                    <td><span class="sort-link">@info.Ent</span></td>
+                }
+                <td>@info.Dist</td>
+                <td>@MathF.Round(info.Dist / info.Count, 2)</td>
+            </tr>
+            @if (Interest == info.Ent && schoolRunInfos.Any())
+            {
+                <tr>
+                    <td colspan="3">
+                        <h5 id="@Interest">Pseudonyme der Klasse @Interest</h5>
+                        <table class="table table-dark table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Gesamte Distanz</th>
+                                    <th>Relative Distanz</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var schoolent in schoolRunInfos.OrderByDescending(o => o.Dist))
+                                {
+                                    <tr @onclick="@( async => EntExpandRequest(schoolent.Ent))">
+                                        @if (isAdmin)
+                                        {
+                                            <td><button type="button" class="btn btn-sm btn-danger mr-2" @onclick="@( async => EntDeleteRequest(schoolent.Ent))" @onclick:stopPropagation="true">Delete</button> @schoolent.Ent</td>
+                                        }
+                                        else
+                                        {
+                                            <td><span class="sort-link">@schoolent.Ent</span></td>
+                                        }
+                                        <td>@schoolent.Dist</td>
+                                        <td>@MathF.Round(schoolent.Dist / schoolent.Count, 2)</td>
+                                    </tr>
+                                    @if (Ent == schoolent.Ent && entRunInfos.Any())
+                                    {
+                                        <tr>
+                                            <td colspan="3">
+                                                <h5 id="@Ent">Strecken von @Ent</h5>
+                                                <table class="table table-dark">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Datum</th>
+                                                            <th>Distanz</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var entent in entRunInfos.OrderBy(o => o.Date))
+                                                        {
+                                                        <tr>
+                                                            @if (isAdmin)
+                                                            {
+                                                                <td><button type="button" class="btn btn-sm btn-danger mr-2" @onclick="@( async => RunDeleteRequest(entent.Date))" @onclick:stopPropagation="true">Delete</button> @entent.Date</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td>@entent.Date</td>
+                                                            }
+                                                            <td>@entent.Dist</td>
+                                                        </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+}
+}
+@code {
+    [Parameter]
+    public RunInfo runInfo { get; set; }
+
+    [Parameter]
+    public bool isAdmin { get; set; } = false;
+
+
+    string Interest = String.Empty;
+    string Ent = String.Empty;
+    List<RunInfo> runInfos = new List<RunInfo>();
+    List<RunInfo> schoolRunInfos = new List<RunInfo>();
+    List<EntRunInfo> entRunInfos = new List<EntRunInfo>();
+    bool isRendered = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (isRendered)
+        {
+            runInfos = await dataService.GetTableData("classes");
+            StateHasChanged();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            runInfos = await dataService.GetTableData("classes");
+            StateHasChanged();
+            isRendered = true;
+        }
+    }
+
+    async Task ClassDeleteRequest(string ent)
+    {
+
+    }
+
+    async Task EntDeleteRequest(string ent)
+    {
+        if (isAdmin)
+            await dataService.DeleteEnt(ent);
+        await SchoolExpandRequest(Interest);
+    }
+
+    async Task RunDeleteRequest(string ent)
+    {
+        if (isAdmin)
+            await dataService.DeleteEntRun(Ent, ent);
+        await EntExpandRequest(Ent);
+    }
+
+    async Task SchoolExpandRequest(string ent)
+    {
+        if (Interest == ent)
+        {
+            Interest = String.Empty;
+            schoolRunInfos = new List<RunInfo>();
+        }
+        else
+        {
+            Interest = ent;
+            schoolRunInfos = await dataService.GetTableData(ent);
+        }
+        StateHasChanged();
+        if (!String.IsNullOrEmpty(Interest))
+            await js.InvokeVoidAsync("Scroll", Interest);
+    }
+
+    async Task EntExpandRequest(string ent)
+    {
+        if (ent == Ent)
+        {
+            Ent = String.Empty;
+            entRunInfos = new List<EntRunInfo>();
+        } else
+        {
+            Ent = ent;
+            entRunInfos = await dataService.GetEntTableData(ent);
+        }
+        StateHasChanged();
+        @if (!String.IsNullOrEmpty(Ent))
+            await js.InvokeVoidAsync("Scroll", Ent);
+    }
+}

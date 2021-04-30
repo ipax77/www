@@ -1,0 +1,51 @@
+﻿@using www.pwa.Shared
+@if (Feedback != null) { 
+<div id="feedback" class="card border-success" style="min-width: 400px; max-width: 650px;">
+    <div class="card-header">Vielen Dank!</div>
+    <div class="card-body">
+        <h4 class="card-title text-info">Damit hast Du folgende Ziele erreicht:</h4>
+        <table class="table table-sm table-dark table-striped">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>km</th>
+                    <th>%</th>
+                    <th>Position</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="table-success">
+                    <td>Deine Strecke</td>
+                    <td><span class="badge badge-danger">@Feedback.EntTotal</span></td>
+                    <td><span class="badge badge-info">@Feedback.EntPercentage %</span></td>
+                    <td><span class="badge badge-success">@Feedback.EntPosition</span></td>
+                </tr>
+                <tr class="table-warning">
+                    <td>Deine Klasse</td>
+                    <td><span class="badge badge-danger">@Feedback.ClassTotal</span></td>
+                    <td><span class="badge badge-info">@Feedback.ClassPercentage %</span></td>
+                    <td><span class="badge badge-success">@Feedback.ClassPosition</span></td>
+                </tr>
+                <tr>
+                    <td>Dein Jahrgang</td>
+                    <td><span class="badge badge-danger">@Feedback.YearTotal</span></td>
+                    <td><span class="badge badge-info">@Feedback.YearPercentage %</span></td>
+                    <td><span class="badge badge-success">@Feedback.YearPosition</span></td>
+                </tr>
+                @*<tr>
+                    <td>Deine Schule</td>
+                    <td><span class="badge badge-danger">@Feedback.SchoolTotal</span></td>
+                    <td><span class="badge badge-info">@Feedback.SchoolPercentage %</span></td>
+                    <td><span class="badge badge-success">@Feedback.SchoolPosition</span></td>
+                </tr>*@
+            </tbody>
+        </table>
+    </div>
+</div>
+}
+
+@code {
+
+    [Parameter]
+    public WwwFeedback Feedback { get; set; }
+}

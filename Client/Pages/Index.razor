@@ -1,0 +1,22 @@
+﻿@page "/"
+@using www.pwa.Shared
+
+<div class="d-flex flex-row">
+    <div class="flex-shrink-1 p-2">
+        <img class="img-fluid" src="images/www_small.png" />
+    </div>
+    <div class="justify-content-center align-self-center">
+        <h3 class="text-white-50">am @WwwData.s_school: @WwwData.s_walk</h3>
+    </div>
+</div>
+<CascadingValue Value="editContext">
+    <CascadingValue Value="formData">
+        <MapComponent Feedback="feedback"></MapComponent>
+        <FeedbackComponent Feedback="feedback"></FeedbackComponent>
+        <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
+        <RunFormComponent OnValidSubmit="HandleValidSubmit" OnInvalidSubmit="HandleInvalidSubmit"></RunFormComponent>
+    </CascadingValue>
+</CascadingValue>
+<div class="mt-2 mb-5" style="max-width: 800px;">
+    <TableComponent runInfo="SchoolInfo" isAdmin="dataService.isAdmin"></TableComponent>
+</div>
