@@ -1,0 +1,6 @@
+@page "/run"
+@inject IJSRuntime _js
+
+<button id = "find-me" @onclick="@(() => _js.InvokeVoidAsync("geoFindMe"))">Show my location</button><br/>
+<p id = "status"></p>
+<a id = "map-link" target="_blank"></a>

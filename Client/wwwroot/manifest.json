@@ -1,6 +1,6 @@
 {
-  "name": "WorldWideWalk",
-  "short_name": "www",
+  "name": "WorldWideWalk run",
+  "short_name": "www run",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
