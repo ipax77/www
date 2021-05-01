@@ -45,3 +45,26 @@ window.StartRun = async() => {
 window.StopRun = (watchId) => {
   navigator.geolocation.clearWatch(watchId);
 };
+
+window.LoadMap = () => {
+
+  window.map = L.map('mapid', {
+      center: [51.318008, 9.468067],
+      zoom: 7
+  });
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  }).addTo(window.map);
+
+  return true;
+};
+
+window.AddLine = (latlngs) => {
+  try {
+    var polyline = L.polyline(latlngs, {color: 'red'}).addTo(window.map);
+    window.map.fitBounds(polyline.getBounds());
+  } catch (error) {
+    console.error(error);
+  }
+};

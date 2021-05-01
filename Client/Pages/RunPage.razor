@@ -1,10 +1,11 @@
 @page "/run"
 
 <div>
-    <button class="btn btn-primary" @onclick="GetLocation">Get GeoLocation</button>
-    <button class="btn btn-primary" @onclick="@( async => StartRun())">Start run</button>
-
-    
+    <div class="btn-group">
+        <button class="btn btn-primary" @onclick="GetLocation">Get GeoLocation</button>
+        <button class="btn btn-primary" @onclick="@( async => StartRun())">Start run</button>
+        <button class="btn btn-primary" @onclick="@( async => _js.InvokeVoidAsync("AddLine"))">Add Run</button>
+    </div>
     <div class="mt-5 mb-5">
         <h4><span class="badge badge-info">Zurückgelegt: @Run.RunInfo.Distance m</span></h4>
         <h4><span class="badge badge-info">Geschwindigkeit: @Run.RunInfo.Kph km/h</span></h4>
@@ -15,6 +16,14 @@
         <div class="btn-block">
             <button class="btn btn-primary" @onclick="Run.GetRunInfo">Run Info</button>
             <button class="btn btn-primary" @onclick="@( async => StopRun())">Stop run</button>
+            
         </div>
     }
+
+    @if (runDone) {
+        <div style="width: 80%; max-width: 900px; height: 500px;">
+            <RunMapComponent Run="Run"></RunMapComponent>
+        </div>
+    }
+    
 </div>

@@ -18,6 +18,7 @@ namespace www.pwa.Client.Pages
         private static Action<double[]> action;
         private int watchId;
         private Run Run = new Run();
+        private bool runDone = false;
 
         protected override void OnInitialized()
         {
@@ -48,6 +49,7 @@ namespace www.pwa.Client.Pages
             int id;
             if (int.TryParse(start, out id)) {
                 watchId = id;
+                runDone = false;
                 await InvokeAsync(() => StateHasChanged());
             }
             else
@@ -55,10 +57,12 @@ namespace www.pwa.Client.Pages
         }
 
         public async Task StopRun(bool dispose = false) {
+            Run.GetRunInfo();
             if (watchId > 0) {
                 await _js.InvokeVoidAsync("StopRun", watchId);
                 if (!dispose) {
                     watchId = 0;
+                    runDone = true;
                     await InvokeAsync(() => StateHasChanged());
                 }
             }
