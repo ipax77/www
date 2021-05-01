@@ -47,15 +47,22 @@ window.StopRun = (watchId) => {
 };
 
 window.LoadMap = () => {
+  console.log("loading map..");
 
-  window.map = L.map('mapid', {
-      center: [51.318008, 9.468067],
-      zoom: 6
-  });
+  window.map = L.map('mapid');
+  window.map.on("load", loaded);
+  window.map.setView([51.318008, 9.468067], 6);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(window.map);
+
+ 
+
+  async function loaded() {
+    console.log("map loaded");
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'MapLoadedCaller');
+  }
 
   return true;
 };
