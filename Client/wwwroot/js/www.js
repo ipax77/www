@@ -50,7 +50,7 @@ window.LoadMap = () => {
 
   window.map = L.map('mapid', {
       center: [51.318008, 9.468067],
-      zoom: 7
+      zoom: 6
   });
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -63,7 +63,11 @@ window.LoadMap = () => {
 window.AddLine = (latlngs) => {
   try {
     var polyline = L.polyline(latlngs, {color: 'red'}).addTo(window.map);
-    window.map.fitBounds(polyline.getBounds());
+    
+    if (polyline != null) {
+      // window.map.fitBounds(polyline.getBounds());
+      window.map.flyToBounds(plyline.getBounds());
+    }
   } catch (error) {
     console.error(error);
   }
