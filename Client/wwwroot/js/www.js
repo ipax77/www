@@ -65,8 +65,8 @@ window.AddLine = (latlngs) => {
     var polyline = L.polyline(latlngs, {color: 'red'}).addTo(window.map);
     
     if (polyline != null) {
-      // window.map.fitBounds(polyline.getBounds());
-      window.map.flyToBounds(plyline.getBounds());
+      window.map.fitBounds(polyline.getBounds());
+      // window.map.flyToBounds(polyline.getBounds());
     }
   } catch (error) {
     console.error(error);
