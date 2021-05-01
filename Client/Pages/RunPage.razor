@@ -1,6 +1,20 @@
 @page "/run"
-@inject IJSRuntime _js
 
-<button id = "find-me" @onclick="@(() => _js.InvokeVoidAsync("geoFindMe"))">Show my location</button><br/>
-<p id = "status"></p>
-<a id = "map-link" target="_blank"></a>
+<div>
+    <button class="btn btn-primary" @onclick="GetLocation">Get GeoLocation</button>
+    <button class="btn btn-primary" @onclick="@( async => StartRun())">Start run</button>
+
+    
+    <div class="mt-5 mb-5">
+        <h4><span class="badge badge-info">Zurückgelegt: @Run.RunInfo.Distance m</span></h4>
+        <h4><span class="badge badge-info">Geschwindigkeit: @Run.RunInfo.Kph km/h</span></h4>
+        <h4><span class="badge badge-info">Gemessene Koords: @Run.RunInfo.Pos</span></h4>
+    </div>
+
+    @if (watchId > 0) {
+        <div class="btn-block">
+            <button class="btn btn-primary" @onclick="Run.GetRunInfo">Run Info</button>
+            <button class="btn btn-primary" @onclick="@( async => StopRun())">Stop run</button>
+        </div>
+    }
+</div>
