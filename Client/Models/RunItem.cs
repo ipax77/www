@@ -1,16 +1,28 @@
 
 using System;
-namespace www.pwa.Client.Models {
-    public class RunItem {
-        public double Latitude {get; set;}
-        public double Longitude {get; set;}
-        public DateTime Time {get; set;}
+namespace www.pwa.Client.Models
+{
+    public class RunItem
+    {
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double Accuracy { get; set; }
+        public double TimeStamp { get; set; }
+        public double Speed { get; set; }
 
-        public RunItem() {}
-        public RunItem(double latitude, double longitude) {
+        public RunItem() { }
+        public RunItem(double latitude, double longitude, double timestamp, double accuracy, double speed)
+        {
             Latitude = latitude;
             Longitude = longitude;
-            Time = DateTime.UtcNow;
+            TimeStamp = timestamp;
+            Accuracy = accuracy;
+            Speed = speed;
+        }
+
+        public DateTime GetTime() {
+            TimeSpan time = TimeSpan.FromMilliseconds(TimeStamp);
+            return new DateTime(1970, 1, 1) + time;
         }
     }
 }

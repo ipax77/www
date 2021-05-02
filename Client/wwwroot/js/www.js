@@ -20,7 +20,7 @@ window.GetLocation = () => {
 window.StartRun = async() => {
 
   const options = {
-    enableHighAccuracy: true,
+    enableHighAccuracy: false,
     maximumAge: 30000,
     timeout: 27000
   };
@@ -33,11 +33,14 @@ window.StartRun = async() => {
   }
 
   async function success(position) {
-    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [position.coords.latitude, position.coords.longitude]);
+    var speed = position.coords.speed;
+    if (speed == null)
+      speed = 0;
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [position.coords.latitude, position.coords.longitude, position.timestamp, position.coords.accuracy, speed]);
   }
 
   async function error() {
-    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [0, 0]);
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [0, 0, 0, 0, 0]);
   }
 
 };
@@ -67,9 +70,9 @@ window.LoadMap = () => {
   return true;
 };
 
-window.AddLine = (latlngs) => {
+window.AddLine = (latlngs, mycolor) => {
   try {
-    var polyline = L.polyline(latlngs, {color: 'red'}).addTo(window.map);
+    var polyline = L.polyline(latlngs, {color: mycolor}).addTo(window.map);
     
     if (polyline != null) {
       window.map.fitBounds(polyline.getBounds());

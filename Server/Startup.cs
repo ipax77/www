@@ -57,6 +57,24 @@ namespace www.pwa.Server
             context.Database.Migrate();
             db.Init(context);
 
+            var data = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<double[]>>(System.IO.File.ReadAllText("/data/rundata.json"));
+            data.RemoveAt(0);
+            data.RemoveAt(0);
+            data.RemoveAt(0);
+            var accs = data.Select(s => s[2]);
+            var speeds = data.Select(s => s[4]);
+            StringBuilder sb = new StringBuilder();
+            double tdist = 0;
+            for(int i = 0; i < data.Count - 1; i++) {
+                var dist = RunService.GetDistance(data[i][0], data[i][1], data[i+1][0], data[i+1][1]);
+                tdist += dist;
+                sb.Append($"{i}: {Math.Round(dist, 2)}m, AccDiff: {Math.Abs(data[i][2] - data[i+1][2])}" + Environment.NewLine);
+            }
+            sb.Append($"Accuracy: Avg: {accs.Average()}, Min: {accs.Min()}, Max: {accs.Max()}" + Environment.NewLine);
+            sb.Append($"Speed: Avg: {speeds.Average()}, Min: {speeds.Min()}, Max: {speeds.Max()}" + Environment.NewLine);
+            sb.Append($"Total: {tdist}m");
+            Console.WriteLine(sb.ToString());
+
             // string basePath = "/www";
             // if (!string.IsNullOrEmpty(basePath))
             // {

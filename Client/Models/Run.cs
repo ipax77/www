@@ -19,9 +19,31 @@ namespace www.pwa.Client.Models
                 {
                     RunInfo.Distance += GetDistance(RunItems[i], RunItems[i + 1]);
                 }
-                RunInfo.Duration = RunItems.Last().Time - RunItems.First().Time;
+                RunInfo.Distance = Math.Round(RunInfo.Distance, 2);
+                RunInfo.StartTime = RunItems.First().GetTime();
+                RunInfo.Duration = RunItems.Last().GetTime() - RunItems.First().GetTime();
                 RunInfo.Pos = RunItems.Count - 1;
             }
+        }
+
+        public bool GetFinalRunInfo() {
+            RunInfo.StartTime = RunItems.First().GetTime();
+            RunInfo.Duration = RunItems.Last().GetTime() - RunItems.First().GetTime();
+            if (RunItems.Count < 20 
+                // || RunInfo.Duration < TimeSpan.FromMinutes(5)
+            ) {
+                return false;
+            }
+
+            RunInfo.Distance = 0;
+            for (int i = 3; i < RunItems.Count - 1; i++) {
+                RunInfo.Distance += GetDistance(RunItems[i], RunItems[i + 1]);
+            }
+            RunInfo.Distance = Math.Round(RunInfo.Distance, 2);
+            RunInfo.KphAvg = Math.Round(RunItems.Select(s => s.Speed).Average(), 2);
+            RunInfo.KphMax = Math.Round(RunItems.Select(s => s.Speed).Max(), 2);
+
+            return true;
         }
 
         public List<double[]> GetMapItems() {

@@ -1,15 +1,16 @@
 @page "/run"
 
 <div>
+    v0.0.1
     <div class="btn-group">
-        <button class="btn btn-primary" @onclick="GetLocation">Get GeoLocation</button>
         <button class="btn btn-primary" @onclick="@( async => StartRun())">Start run</button>
-        <button class="btn btn-primary" @onclick="@( async => _js.InvokeVoidAsync("AddLine"))">Add Run</button>
+        <button class="btn btn-primary" @onclick="@( async => DebugRun())">Debug run</button>
     </div>
     <div class="mt-5 mb-5">
-        <h4><span class="badge badge-info">Zurückgelegt: @Run.RunInfo.Distance m</span></h4>
-        <h4><span class="badge badge-info">Geschwindigkeit: @Run.RunInfo.Kph km/h</span></h4>
-        <h4><span class="badge badge-info">Gemessene Koords: @Run.RunInfo.Pos</span></h4>
+        <h4 class="text-white-50">Startzeit: @Run.RunInfo.StartTime.ToLocalTime()</h4>
+        <h4 class="text-white-50">Du hast @Run.RunInfo.Distance m in @Run.RunInfo.Duration.ToString(@"hh\:mm\:ss") zurückgelegt!</h4>
+        <h4><span class="badge badge-info">Geschwindigkeit: @Run.RunInfo.KphAvg km/h</span></h4>
+        <h4><span class="badge badge-info">Höchstgeschwindigkeit: @Run.RunInfo.KphMax km/h</span></h4>
     </div>
 
     @if (watchId > 0) {
@@ -21,9 +22,14 @@
     }
 
     @if (runDone) {
-        <div style="width: 80%; max-width: 900px; height: 500px;">
+        <div style="width: 90%; max-width: 900px; height: 500px;">
             <RunMapComponent Run="Run"></RunMapComponent>
         </div>
     }
     
+    <div>
+        <p>
+            @debugInfo
+        </p>
+    </div>
 </div>
