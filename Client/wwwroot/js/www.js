@@ -20,7 +20,7 @@ window.GetLocation = () => {
 window.StartRun = async() => {
 
   const options = {
-    enableHighAccuracy: false,
+    enableHighAccuracy: true,
     maximumAge: 30000,
     timeout: 27000
   };

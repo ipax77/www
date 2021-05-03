@@ -29,6 +29,13 @@ namespace www.pwa.Server.Controllers
             this.context = context;
         }
 
+        [HttpPost("api/rundata")]
+        public async Task<ActionResult> GetRunData(EntityRunFormData rundata)
+        {
+            
+            return Ok();
+        }
+
         [HttpPost("api/testdata")]
         public async Task<ActionResult> GetData(List<double[]> data)
         {
