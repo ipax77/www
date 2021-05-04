@@ -7,4 +7,14 @@ namespace www.pwa.Client.Models {
         UploadFailed,
         UploadDone
     }
+
+    public enum RunStatus {
+        Init,
+        Running,
+        Paused,
+        FinishedAndTransmitting,
+        FinishedAndTrasmitFailed,
+        FinishedAndTransmitted,
+
+    }
 }

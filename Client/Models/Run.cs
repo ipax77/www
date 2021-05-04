@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
+using www.pwa.Client.Services;
 using www.pwa.Shared;
 
 namespace www.pwa.Client.Models
@@ -12,74 +14,41 @@ namespace www.pwa.Client.Models
         public RunInfo RunInfo { get; set; } = new RunInfo();
         public List<RunItem> MapItems { get; set; } = new List<RunItem>();
 
-
         public void GetRunInfo()
         {
-            if (RunItems.Count > RunInfo.Pos + 2)
+            if (RunItems.Count > RunInfo.Pos + 3)
             {
                 for (int i = RunInfo.Pos; i < RunItems.Count - 1; i++)
                 {
-                    RunInfo.Distance += GetDistance(RunItems[i], RunItems[i + 1]);
+                    RunInfo._Distance += GeoService.GetDistance(RunItems[i], RunItems[i + 1]);
                 }
-                RunInfo.Distance = Math.Round(RunInfo.Distance, 2);
                 RunInfo.StartTime = RunItems.First().GetTime();
                 RunInfo.Duration = RunItems.Last().GetTime() - RunItems.First().GetTime();
                 RunInfo.Pos = RunItems.Count - 1;
+                RunInfo.KphAvg = Math.Round(RunItems.Select(s => s.Speed).Average(), 2);
+                RunInfo.KphMax = Math.Round(RunItems.Select(s => s.Speed).Max(), 2);
             }
         }
 
         public bool GetFinalRunInfo()
         {
+            if (RunItems.Count < 6)
+                return false;
             RunInfo.StartTime = RunItems.First().GetTime();
             RunInfo.Duration = RunItems.Last().GetTime() - RunItems.First().GetTime();
-            // if (RunItems.Count < 20 
-            //      || RunInfo.Duration < TimeSpan.FromMinutes(5)
-            // ) {
-            //     return false;
-            // }
 
-            RunInfo.Distance = 0;
-            if (RunItems.Count > 5) {
+            RunInfo._Distance = 0;
+
             for (int i = 3; i < RunItems.Count - 1; i++)
             {
-                RunInfo.Distance += GetDistance(RunItems[i], RunItems[i + 1]);
+                RunInfo._Distance += GeoService.GetDistance(RunItems[i], RunItems[i + 1]);
             }
-            RunInfo.Distance = Math.Round(6376500.0 * RunInfo.Distance, 2);
             RunInfo.KphAvg = Math.Round(RunItems.Select(s => s.Speed).Average(), 2);
             RunInfo.KphMax = Math.Round(RunItems.Select(s => s.Speed).Max(), 2);
-            }
 
             return true;
         }
 
-        public List<double[]> GetMapItems()
-        {
-            if (RunItems.Count > 3)
-            {
-                MapItems.Add(RunItems.First());
-                double distance = 0;
-                for (int i = 1; i < RunItems.Count - 1; i++)
-                {
-                    distance += GetDistance(RunItems[i], RunItems[i + 1]);
-                    if (distance > 5)
-                    {
-                        MapItems.Add(RunItems[i + 1]);
-                        distance = 0;
-                    }
-                }
-            }
-            return MapItems.Select(s => new double[] { s.Latitude, s.Longitude }).ToList();
-        }
 
-        public double GetDistance(RunItem item1, RunItem item2)
-        {
-            var d1 = item1.Latitude * (Math.PI / 180.0);
-            var num1 = item1.Longitude * (Math.PI / 180.0);
-            var d2 = item2.Latitude * (Math.PI / 180.0);
-            var num2 = item2.Longitude * (Math.PI / 180.0) - num1;
-            var d3 = Math.Pow(Math.Sin((d2 - d1) / 2.0), 2.0) + Math.Cos(d1) * Math.Cos(d2) * Math.Pow(Math.Sin(num2 / 2.0), 2.0);
-            // return 6376500.0 * (2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3)));
-            return 2.0 * Math.Atan2(Math.Sqrt(d3), Math.Sqrt(1.0 - d3));
-        }
     }
 }

@@ -6,7 +6,9 @@ namespace www.pwa.Client.Models
 {
     public class RunInfo
     {
-        public double Distance { get; set; }
+        public double _Distance {get; set;}
+        [JsonIgnore]
+        public double Distance => Math.Round(6376500.0 * _Distance, 2);
         public DateTime StartTime { get; set; }
         public TimeSpan Duration { get; set; }
         [JsonIgnore]

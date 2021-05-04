@@ -1,20 +1,27 @@
+const geooptions = {
+  enableHighAccuracy: true,
+  maximumAge: 0,
+  timeout: 2900
+};
+
 
 window.GetLocation = () => {
   if(!navigator.geolocation) {
     return 'Geolocation is not supported by your browser';
   } else {
-    navigator.geolocation.getCurrentPosition(success, error);
+    navigator.geolocation.getCurrentPosition(success, error, geooptions);
   }
 
   async function success(position) {
-    const latitude  = position.coords.latitude;
-    const longitude = position.coords.longitude;
-    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [latitude, longitude]);
+    // var speed = position.coords.speed;
+    // if (speed == null)
+    //   speed = 0;
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [position.coords.latitude, position.coords.longitude, position.timestamp, position.coords.accuracy, 0]);
   }
 
-  function error() {
-    return "";
-  }  
+  async function error(err) {
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'ErrorCaller', 'ERROR(' + err.code + '): ' + err.message);
+  }
 };
 
 window.StartRun = async() => {
@@ -29,6 +36,7 @@ window.StartRun = async() => {
     return 'Geolocation is not supported by your browser';
   } else {
     const watchId = navigator.geolocation.watchPosition(success, error, options);
+    // const watchId = navigator.geolocation.watchPosition(success, error);
     return String(watchId);
   }
 
@@ -39,8 +47,8 @@ window.StartRun = async() => {
     await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [position.coords.latitude, position.coords.longitude, position.timestamp, position.coords.accuracy, speed]);
   }
 
-  async function error() {
-    await DotNet.invokeMethodAsync('www.pwa.Client', 'UpdateRunCaller', [0, 0, 0, 0, 0]);
+  async function error(err) {
+    await DotNet.invokeMethodAsync('www.pwa.Client', 'ErrorCaller', 'ERROR(' + err.code + '): ' + err.message);
   }
 
 };
