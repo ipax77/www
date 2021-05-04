@@ -36,7 +36,7 @@ namespace www.pwa.Client.Shared
                 // var mapUp = await _js.InvokeAsync<bool>("LoadMap", Run.RunItems.Select(s => new double[] { s.Latitude, s.Longitude }).ToArray());
                 mapUp = await _js.InvokeAsync<bool>("LoadMap");
                 // DEBUG
-                await Http.PostAsJsonAsync("api/testdata", Run.RunItems.Select(s => new double[] { s.Latitude, s.Longitude, s.Accuracy, s.TimeStamp, s.Speed }).ToList());
+                // await Http.PostAsJsonAsync("api/testdata", Run.RunItems.Select(s => new double[] { s.Latitude, s.Longitude, s.Accuracy, s.TimeStamp, s.Speed }).ToList());
             }
         }
 

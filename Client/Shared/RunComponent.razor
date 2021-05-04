@@ -47,15 +47,17 @@
         </div>
     
 
-        <div class="mt-5 mb-5">
-            <h4 class="text-white-50">Startzeit: @runService.Run.RunInfo.StartTime.ToLocalTime()</h4>
-            <h4 class="text-white-50">Du hast @runService.Run.RunInfo.Distance m in @runService.Run.RunInfo.Duration.ToString(@"hh\:mm\:ss")
-                zurückgelegt!</h4>
-            <h4><span class="badge badge-info">&empty;-Geschwindigkeit: @runService.Run.RunInfo.KphAvg km/h</span></h4>
-            <h4><span class="badge badge-info">Höchstgeschwindigkeit: @runService.Run.RunInfo.KphMax km/h</span></h4>
-            <h4><span class="badge badge-info">Gemessene Punkte: @runService.Run.RunItems.Count</span></h4>
-        </div>
     }
+
+    <div class="mt-5 mb-5">
+        <h4 class="text-white-50">Startzeit: @runService.Run.RunInfo.StartTime.ToLocalTime()</h4>
+        <h4 class="text-white-50">Du hast @runService.Run.RunInfo.Distance m in @runService.Run.RunInfo.Duration.ToString(@"hh\:mm\:ss")
+            zurückgelegt!</h4>
+        <h4><span class="badge badge-info">&empty;-Geschwindigkeit: @runService.Run.RunInfo.KphAvg km/h</span></h4>
+        <h4><span class="badge badge-info">Höchstgeschwindigkeit: @runService.Run.RunInfo.KphMax km/h</span></h4>
+        <h4><span class="badge badge-info">Gemessene Punkte: @runService.Run.RunItems.Count</span></h4>
+    </div>
+
     @if (runService.runStatus == Models.RunStatus.FinishedAndTransmitting)
     {
         if (runService.Run.RunInfo.Feedback != null) {

@@ -66,14 +66,14 @@ namespace www.pwa.Client.Services
                 if (timerCount % 20 == 0)
                 {
                     Run.GetRunInfo();
-                    if (Run.RunInfo.Distance > 42.195 * 1000) {
+                    if (Run.RunInfo.Distance > 42.195 * 1000.0) {
                         Run.RunInfo._Distance = 42.1 * 1000.0 / 6376500.0;
                         Stop();
                     } else
                         OnRunDataAvailable();
                 } else {
                     // DEBUG
-                    OnRunDataAvailable();
+                    // OnRunDataAvailable();
                 }
             }
         }
