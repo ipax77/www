@@ -1,6 +1,6 @@
 <div>
     <p>
-        v0.0.1.4
+        v0.0.1.5
     </p>
     <div class="jumbotron">
         Hinweise: Um einen Lauf zu starten musst Du nicht online sein. Du kannst den gesamten Lauf ohne
@@ -22,7 +22,7 @@
             else if (UploadStatus == Models.UploadStatus.UploadSuccess)
             {
                 <span class="oi oi-circle-check text-success">&nbsp;</span> @("Upload successful")
-                <button class="btn btn-primary" @onclick="runService.Start">Neuen Lauf starten</button>
+                
             }
             else if (UploadStatus == Models.UploadStatus.UploadFailed)
             {
@@ -36,6 +36,7 @@
             {
 
             }
+            <button class="btn btn-primary" @onclick="runService.Start">Neuen Lauf starten</button>
         </div>
     }
     </div>

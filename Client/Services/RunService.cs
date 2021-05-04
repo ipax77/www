@@ -35,6 +35,7 @@ namespace www.pwa.Client.Services
             Timer.AutoReset = true;
             Timer.Enabled = true;
             runStatus = RunStatus.Running;
+            js.InvokeVoidAsync("GetLocation");
             OnRunDataAvailable();
         }
 

@@ -41,7 +41,9 @@ namespace www.pwa.Client.Models
 
             for (int i = 3; i < RunItems.Count - 1; i++)
             {
-                RunInfo._Distance += GeoService.GetDistance(RunItems[i], RunItems[i + 1]);
+                double distance = GeoService.GetDistance(RunItems[i], RunItems[i + 1]);
+                RunInfo._Distance += distance;
+                RunItems[i+1].Speed = TimeSpan.FromSeconds(RunItems[i+1].TimeStamp - RunItems[i].TimeStamp).TotalHours / (6376500.0 * distance);
             }
             RunInfo.KphAvg = Math.Round(RunItems.Select(s => s.Speed).Average(), 2);
             RunInfo.KphMax = Math.Round(RunItems.Select(s => s.Speed).Max(), 2);
