@@ -37,11 +37,25 @@ namespace www.pwa.Server.Controllers
         }
 
         [HttpPost("api/testdata")]
-        public async Task<ActionResult> GetData(List<double[]> data)
+        public async Task<ActionResult> GetData(RunDebugModel data)
         {
             var json = JsonSerializer.Serialize(data, new JsonSerializerOptions() { WriteIndented = true });
             await System.IO.File.WriteAllTextAsync("/data/rundata.json", json);
             return Ok();
+        }
+
+        [HttpPost("api/testrunitem")] 
+        public async Task<ActionResult> GetItemData(RunDebugItemModel data) {
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions() { WriteIndented = true });
+            await System.IO.File.AppendAllTextAsync("/data/runitemdata.json", json);
+            return Ok();
+        }
+
+        [HttpGet("api/gettestdata")]
+        public async Task<ActionResult<RunDebugModel>> GetRunTestData()
+        {
+            var data = JsonSerializer.Deserialize<RunDebugModel>(await System.IO.File.ReadAllTextAsync("/data/www/runitemdata_1.json"));
+            return data;
         }
 
         [HttpGet("api/testrun")]

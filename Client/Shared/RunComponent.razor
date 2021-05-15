@@ -1,6 +1,6 @@
 <div>
     <p>
-        v0.0.1.5
+        v0.0.1.9
     </p>
     <div class="jumbotron">
         Hinweise: Um einen Lauf zu starten musst Du nicht online sein. Du kannst den gesamten Lauf ohne
@@ -12,7 +12,7 @@
     </div>
     <div class="btn-group">
     @if (runService.runStatus == Models.RunStatus.Init) {
-        <button class="btn btn-primary" @onclick="runService.Start">Lauf starten!</button>
+        <button class="btn btn-primary" @onclick="StartRun">Lauf starten!</button>
     } else {
         <div class="ml-3">
             @if (UploadStatus == Models.UploadStatus.Uploading)
@@ -26,17 +26,21 @@
             }
             else if (UploadStatus == Models.UploadStatus.UploadFailed)
             {
+                @if (runService.runStatus == Models.RunStatus.Failed) {
+                    <h4><span class="badge badge-danger">@debugInfo</span></h4>
+                } else {
                 <span class="oi oi-circle-x text-danger">&nbsp;</span> @("Upload failed. Please try again later.")
                 <p>
                     Deine Strecke wurde noch nicht übertragen. Bitte versuche es später noch einmal.
                 </p>
                 <button type="button" class="btn btn-warning" @onclick="@( async => SubmitData())">Strecke speichern</button>
+                }
             }
             else
             {
 
             }
-            <button class="btn btn-primary" @onclick="runService.Start">Neuen Lauf starten</button>
+            <button class="btn btn-primary" @onclick="StartRun">Neuen Lauf starten</button>
         </div>
     }
     </div>
@@ -44,7 +48,7 @@
         
         <h4><span class="oi spinner-grow spinner-grow-sm text-success mb-1"></span> Die Aufzeichung läuft - Guten Lauf!</h4>
         <div class="btn-group mt-2">
-            <button class="btn btn-primary" @onclick="runService.Stop">Lauf beenden</button>
+            <button class="btn btn-primary" @onclick="StopRun">Lauf beenden</button>
         </div>
     
 
@@ -54,7 +58,7 @@
         <h4 class="text-white-50">Startzeit: @runService.Run.RunInfo.StartTime.ToLocalTime()</h4>
         <h4 class="text-white-50">Du hast @runService.Run.RunInfo.Distance m in @runService.Run.RunInfo.Duration.ToString(@"hh\:mm\:ss")
             zurückgelegt!</h4>
-        <h4><span class="badge badge-info">&empty;-Geschwindigkeit: @runService.Run.RunInfo.KphAvg km/h</span></h4>
+        <h4><span class="badge badge-info">&empty;-Geschwindigkeit: @runService.Run.RunInfo.Kph km/h</span></h4>
         <h4><span class="badge badge-info">Höchstgeschwindigkeit: @runService.Run.RunInfo.KphMax km/h</span></h4>
         <h4><span class="badge badge-info">Gemessene Punkte: @runService.Run.RunItems.Count</span></h4>
     </div>

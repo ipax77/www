@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WorldWideWalk.MainPage">
+
+    <ScrollView>
+        <StackLayout x:Name="StackLayoutMap">
+            <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+                <Label Text="WorldWideWalk" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+            </Frame>
+            <Frame BackgroundColor="Yellow" Padding="0" CornerRadius="0">
+                <Label Text="Es wurden bereits 0 km zurückgelegt." FontSize="16" Padding="30,10,30,10"/>
+            </Frame>
+            <Button x:Name="BtnStart" Text="Lauf starten" Clicked="StartRun" />
+            <Button x:Name="BtnStop" Text="Lauf stoppen" IsEnabled="False" />
+            <StackLayout>
+                <Label x:Name="LbTime"></Label>
+                <Label x:Name="LbDistance"></Label>
+                <Label x:Name="LbCount"></Label>
+            </StackLayout>
+            <Grid x:Name="FeedbackGrid"  IsVisible="false">
+            </Grid>
+            <StackLayout x:Name="MapLayout" IsVisible="false">
+                <!--<maps:Map x:Name="map" HeightRequest="500" />-->
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>
+
+</ContentPage>

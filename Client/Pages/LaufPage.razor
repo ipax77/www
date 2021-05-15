@@ -1,3 +1,131 @@
 @page "/meinlauf"
+@layout RunLayout
+@using System.Threading
+@inject IJSRuntime _js
 
-<RunComponent></RunComponent>
+
+@if (!isStarted) {
+    <button type="button" class="btn btn-primary" @onclick="Start">Start Run</button>
+} else {
+    <button type="button" class="btn btn-primary"
+        @onmousedown="Stop1"
+        @onmouseup="Stop1Cancel"
+        @onmouseout="Stop1Cancel"
+        @ontouchstart="Stop1"
+        @ontouchend="Stop1Cancel"
+        @ontouchleave="Stop1Cancel"
+    >
+        Stop Run
+    </button>
+    <div class="ml-2" id="div_progbar">
+        <div class="progress mt-2">
+            <div class="progress-bar progress-bar-striped" role="progressbar"
+                    style="width: @((int)Done)%" aria-valuenow=@Done
+                    aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+    </div>
+    @if (isStop2Requested) {
+        <div class="d-flex vh-100">
+            <div class="justify-content-center align-self-center">
+            <p>
+            Willst du den Lauf wirklich beenden?
+            </p>
+            <div>
+                <div class="d-inline float-left">
+                    <button type="button" class="btn btn-primary" @onclick="Stop">Ja</button>
+                </div>
+                <div class="d-inline float-right">
+                    <button type="button" class="btn btn-primary" @onclick="Stop2Cancel">Nein</button>
+                </div>
+
+            </div>
+            </div>
+        </div>
+    }
+}
+
+
+<div class="@(isStarted ? "d-none" : "")">
+    <RunComponent @ref="runComponent"></RunComponent>
+</div>
+
+@code {
+    bool isStarted = false;
+    bool isStop1Requested = false;
+    bool isStop2Requested = false;
+    CancellationTokenSource source1 = new CancellationTokenSource();
+    CancellationTokenSource source2 = new CancellationTokenSource();
+    float Done = 0;
+    RunComponent runComponent;
+
+    void Start() {
+        isStarted = true;
+        isStop1Requested = false;
+        isStop2Requested = false;
+        Done = 0;
+        runComponent.StartWatch();
+    }
+
+    void Stop() {
+        source2.Cancel();
+        isStarted = false;
+        isStop1Requested = false;
+        isStop2Requested = false;
+        runComponent.StopWatch();
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    void Stop1() {
+        isStop1Requested = true;
+        source1 = new CancellationTokenSource();
+        Stop1Feedback();
+    }
+
+    void Stop1Cancel() {
+        source1.Cancel();
+        isStop1Requested = false;
+        Done = 0;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    void Stop2() {
+        isStop2Requested = true;
+        source2 = new  CancellationTokenSource();
+        Stop2Feedback();
+    }
+
+    void Stop2Cancel() {
+        isStop1Requested = false;
+        isStop2Requested = false;
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    async Task Stop1Feedback() {
+        int i = 0;
+        while (!source1.IsCancellationRequested) {
+            if (i > 20) {
+                Stop2();
+                break;
+            }
+            i++;
+            Done = (i / 20.0f) * 100;
+            await InvokeAsync(() => StateHasChanged());
+            await Task.Delay(250, source1.Token);
+        }
+    }
+
+    async Task Stop2Feedback() {
+        int i = 10;
+        while (!source2.IsCancellationRequested) {
+            if (i <= 0) {
+                Stop2Cancel();
+                break;
+            }
+            i--;
+            Done = (i / 10.0f) * 100;
+            await InvokeAsync(() => StateHasChanged());
+            await Task.Delay(250, source2.Token);
+        }
+    }
+}

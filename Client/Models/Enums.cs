@@ -15,6 +15,6 @@ namespace www.pwa.Client.Models {
         FinishedAndTransmitting,
         FinishedAndTrasmitFailed,
         FinishedAndTransmitted,
-
+        Failed
     }
 }

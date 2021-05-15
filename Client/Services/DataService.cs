@@ -149,5 +149,14 @@ namespace www.pwa.Client.Services
 
             }
         }
+
+        // DEBUG
+        public async Task SendDebugRun(RunDebugModel data) {
+            await Http.PostAsJsonAsync("api/testdata", data);
+        }
+
+        public async Task SendDebugRunItem(RunDebugItemModel data) {
+            await Http.PostAsJsonAsync("api/testrunitem", data);
+        }
     }
 }

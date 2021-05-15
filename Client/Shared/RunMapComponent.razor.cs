@@ -17,8 +17,6 @@ namespace www.pwa.Client.Shared
         protected IJSRuntime _js { get; set; }
         [Inject]
         protected ILogger<RunMapComponent> _logger { get; set; }
-        [Inject]
-        protected HttpClient Http { get; set; }
 
         [Parameter]
         public Run Run { get; set; }
@@ -35,8 +33,6 @@ namespace www.pwa.Client.Shared
             {
                 // var mapUp = await _js.InvokeAsync<bool>("LoadMap", Run.RunItems.Select(s => new double[] { s.Latitude, s.Longitude }).ToArray());
                 mapUp = await _js.InvokeAsync<bool>("LoadMap");
-                // DEBUG
-                // await Http.PostAsJsonAsync("api/testdata", Run.RunItems.Select(s => new double[] { s.Latitude, s.Longitude, s.Accuracy, s.TimeStamp, s.Speed }).ToList());
             }
         }
 
@@ -67,7 +63,7 @@ namespace www.pwa.Client.Shared
         [JSInvokable]
         public static void MapLoadedCaller()
         {
-            action.Invoke();
+            // action.Invoke();
         }
 
     }
