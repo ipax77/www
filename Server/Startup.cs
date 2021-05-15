@@ -57,32 +57,32 @@ namespace www.pwa.Server
             context.Database.Migrate();
             db.Init(context);
 
-            // string basePath = "/www";
-            // if (!string.IsNullOrEmpty(basePath))
-            // {
-            //     app.Use((context, next) =>
-            //     {
-            //         context.Request.Scheme = "https";
-            //         return next();
-            //     });
+             string basePath = "/www";
+             if (!string.IsNullOrEmpty(basePath))
+             {
+                 app.Use((context, next) =>
+                 {
+                     context.Request.Scheme = "https";
+                     return next();
+                 });
 
-            //     app.Use((context, next) =>
-            //     {
-            //         context.Request.PathBase = new PathString(basePath);
-            //         if (context.Request.Path.StartsWithSegments(basePath, out var remainder))
-            //         {
-            //             context.Request.Path = remainder;
-            //         }
-            //         return next();
-            //     });
-            // }
-            // else
-            //     basePath = String.Empty;
+                 app.Use((context, next) =>
+                 {
+                     context.Request.PathBase = new PathString(basePath);
+                     if (context.Request.Path.StartsWithSegments(basePath, out var remainder))
+                     {
+                         context.Request.Path = remainder;
+                     }
+                     return next();
+                 });
+             }
+             else
+                 basePath = String.Empty;
 
-            // app.UseForwardedHeaders(new ForwardedHeadersOptions
-            // {
-            //     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            // });
+             app.UseForwardedHeaders(new ForwardedHeadersOptions
+             {
+                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+             });
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
