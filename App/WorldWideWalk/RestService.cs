@@ -43,6 +43,26 @@ namespace WorldWideWalk
             };
         }
 
+        public async Task<Walk> GetWalk(string guid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA")
+        {
+            Uri uri = new Uri(string.Format(App.API, $"walk/{guid}"));
+
+            try
+            {
+                var response = await client.GetAsync(uri);
+                if (response.IsSuccessStatusCode)
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    return JsonSerializer.Deserialize<Walk>(content);
+                }
+            }
+            catch
+            {
+
+            }
+            return null;
+        }
+
         public async Task<WwwFeedback> SubmitRun(EntityRunFormData data)
         {
             Uri uri = new Uri(string.Format(App.API, "submit"));

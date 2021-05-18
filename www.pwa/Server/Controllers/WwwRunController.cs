@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -75,6 +76,13 @@ namespace www.pwa.Server.Controllers
                 }))
             };
             return walkModel;
+        }
+
+        [HttpGet("gettestdata")]
+        public async Task<ActionResult<RunDebugModel>> GetRunTestData()
+        {
+            var data = JsonSerializer.Deserialize<RunDebugModel>(await System.IO.File.ReadAllTextAsync("/data/www/runitemdata_1.json"));
+            return data;
         }
 
         [HttpPut]

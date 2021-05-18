@@ -15,7 +15,7 @@ namespace WorldWideWalk
         private ILocationManager locationManager;
         private IRestService restService;
         private Run Run = new Run();
-
+        private Walk Walk;
         public MainPage()
         {
             InitializeComponent();

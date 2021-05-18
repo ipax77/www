@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using www.pwa.Shared;
 using www.pwa.Server.Services;
 using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace www.pwa.Server
 {
@@ -186,7 +188,32 @@ namespace www.pwa.Server
                 context.SaveChanges();
             }
             
+            string basePath = Environment.GetEnvironmentVariable("ASPNETCORE_BASEPATH");
+            if (!string.IsNullOrEmpty(basePath))
+            {
+                app.Use((context, next) =>
+                {
+                    context.Request.Scheme = "https";
+                    return next();
+                });
 
+                app.Use((context, next) =>
+                {
+                    context.Request.PathBase = new PathString(basePath);
+                    if (context.Request.Path.StartsWithSegments(basePath, out var remainder))
+                    {
+                        context.Request.Path = remainder;
+                    }
+                    return next();
+                });
+            }
+            else
+                basePath = String.Empty;
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             if (env.IsDevelopment())
             {
