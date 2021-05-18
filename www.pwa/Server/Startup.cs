@@ -75,6 +75,7 @@ namespace www.pwa.Server
             if (!context.wwwWalks.Any()) {
                 WwwWalk nepalWalk = new WwwWalk() {
                     Name = "Spendenlauf für Nepal",
+                    Guid = new Guid("7A40C465-BDC8-4373-B6BE-6E49C10D5ECA"),
                     Description = "",
                     TotalDistance = 8400.0f,
                     isActive = true,
