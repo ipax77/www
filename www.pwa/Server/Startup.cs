@@ -188,7 +188,8 @@ namespace www.pwa.Server
                 context.SaveChanges();
             }
             
-            string basePath = Environment.GetEnvironmentVariable("ASPNETCORE_BASEPATH");
+            // string basePath = Environment.GetEnvironmentVariable("ASPNETCORE_BASEPATH");
+            string basePath = "/www";
             if (!string.IsNullOrEmpty(basePath))
             {
                 app.Use((context, next) =>
