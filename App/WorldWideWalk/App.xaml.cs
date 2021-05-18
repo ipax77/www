@@ -9,7 +9,7 @@ namespace WorldWideWalk
         // Config
         public const string API = "https://www.pax77.org/www/api/";
         public static TimeSpan MaxRunTime = TimeSpan.FromHours(2);
-        public const double MaxSpeedInKmH = 20;
+        public const double MaxSpeedInKmH = 40;
 
         public App()
         {

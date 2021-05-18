@@ -7,5 +7,6 @@ namespace WorldWideWalk
     public interface IRestService
     {
         Task SubmitDebugData(Run run);
+        Task<Run> GetDebugData();
     }
 }

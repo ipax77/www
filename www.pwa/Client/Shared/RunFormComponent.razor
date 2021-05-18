@@ -1,0 +1,107 @@
+﻿@using www.pwa.Shared
+@using System.Linq
+
+<div class="mt-1">
+    
+    <EditForm id="runform" EditContext="editContext" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpseudonym">
+                Pseudonym:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputText id="newpseudonym" class="form-control" @bind-Value="Run.Identifier" />
+                <ValidationMessage For="@(() => Run.Identifier)"></ValidationMessage>
+            </div>
+        </div>
+        @*<div class="form-group row justify-content-start mb-1">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted">
+                    Lauf:
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputSelect class="form-control" @bind-Value="@Run.Walk">
+                        @foreach (string walk in _options.Walks.Select(s => s.Name))
+                        {
+                            <option value="@walk">@walk</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+            *@
+            <div class="form-group row justify-content-start mb-1">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted">
+                    Schule:
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputSelect class="form-control" @bind-Value="@Run.School">
+                        @foreach (string school in Walk.Schools.Select(s => s.Name))
+                        {
+                            <option value="@school">@school</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        <div class="form-group form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newschoolclass">
+                Klasse:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputSelect id="newschoolclass" class="form-control" @bind-Value="@Run.SchoolClass">
+                    <option value="">Wähle die Klasse ...</option>
+                    @foreach (string schoolclass in Walk.Schools.First(f => f.Name == Run.School).SchoolClasses.Select(s => s.Name))
+                    {
+                        <option value="@schoolclass">@schoolclass</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="form-group form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted">
+                gelaufene Strecke in km:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputNumber class="form-control" @bind-Value="@Run.Distance" />
+                <ValidationMessage For="@(() => Run.Distance)"></ValidationMessage>
+            </div>
+        </div>
+        <div class="form-group form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newrun">
+                gelaufen am:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputDate id="newrun" class="form-control" @bind-Value="@Run.Time" />
+            </div>
+        </div>
+        <div class="form-group row justify-content-start">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpwd">
+                Passwort:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputText id="newpwd" type="text" autocorrect="off" autocapitalize="off" class="form-control" @bind-Value="@Run.Credential" />
+                <ValidationMessage For="@(() => Run.Credential)"></ValidationMessage>
+            </div>
+        </div>
+        <div class="form-group form-group row justify-content-start mb-1">
+            <small class="col-sm-6">Mit der Eingabe des Passwortes erkläre ich mich einverstanden, dass die Daten auf dieser Webseite genutzt werden dürfen.</small>
+        </div>
+        <div class="form-group mb-0">
+            <button type="submit" class="btn btn-primary">Senden</button>
+        </div>
+    </EditForm>
+</div>
+@code {
+    [Parameter]
+    public EditContext editContext { get; set; }
+    [Parameter]
+    public EntityRunFormData Run { get; set; }
+    [Parameter]
+    public WalkAppModel Walk { get; set; }
+
+    [Parameter]
+    public EventCallback OnValidSubmit { get; set; }
+
+    [Parameter]
+    public EventCallback OnInvalidSubmit { get; set; }
+
+}

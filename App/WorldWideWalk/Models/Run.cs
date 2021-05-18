@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.Text.Json.Serialization;
+using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace WorldWideWalk.Models
 {
@@ -11,16 +14,21 @@ namespace WorldWideWalk.Models
         public DateTime StopTime { get; set; }
         public List<RunItem> RunItems { get; set; } = new List<RunItem>();
         public double Distance { get; set; }
+        [JsonIgnore]
         public double AverageSpeedInKmH => (Distance / 1000) / (StopTime - StartTime).TotalHours;
-
-        public bool SetRunInfo()
+        [JsonIgnore]
+        public HtmlWebViewSource Html;
+        public string SetRunInfo()
         {
             if (RunItems.Count < 6)
-                return false;
+                return "Zu wenige Daten";
 
-            var items = FilterData();
-            Distance = Math.Round(items.Select(s => s.Distance).Sum(), 2);
-            return true;
+            RunItems = FilterData();
+            Distance = Math.Round(RunItems.Select(s => s.Distance).Sum(), 2);
+            if (AverageSpeedInKmH > App.MaxSpeedInKmH)
+                return "Maximale Höchstgeschwindigkeit überschritten.";
+            Html = SetWebViewSource();
+            return "";
         }
 
         private List<RunItem> FilterData()
@@ -76,6 +84,55 @@ namespace WorldWideWalk.Models
                 runItems[i].Latitude = latavg;
                 runItems[i].Longitude = lonavg;
             }
+        }
+
+        private ColorLine GetMainLine()
+        {
+            return new ColorLine()
+            {
+                Color = "blue",
+                Line = new List<double[]>(RunItems.Where(x => String.IsNullOrEmpty(x.Error)).Select(s => new double[] {
+                        s.Latitude,
+                        s.Longitude
+                    }))
+            };
+        }
+
+        private HtmlWebViewSource SetWebViewSource()
+        {
+            var mainline = GetMainLine();
+            return new HtmlWebViewSource
+            {
+                Html = @"<html>
+     <head>
+    <meta charset= ""UTF-8"">
+     <link rel=""stylesheet"" href=""https://unpkg.com/leaflet@1.7.1/dist/leaflet.css""
+   integrity = ""sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==""
+   crossorigin = """" />
+     <script src=""https://unpkg.com/leaflet@1.7.1/dist/leaflet.js""
+   integrity = ""sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==""
+   crossorigin = """" ></script>
+    <script>
+    function init() {
+                    var map = L.map('mapcontainer');
+                    map.setView([51.318008, 9.468067], 6);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href=""https://www.openstreetmap.org/copyright"">OpenStreetMap</a> contributors'
+                    }).addTo(map);
+    " +
+    " var polyline = L.polyline(" +
+        mainline.GetJsonString() +
+    ", { color: '" + mainline.Color + "' }).addTo(map);" +
+    " map.fitBounds(polyline.getBounds());" +
+    "}" +
+    "</script>" +
+    "</head>" +
+    "<body onload = \"init()\" >" +
+    "<div id=\"mapcontainer\" style=\"width: " + DeviceDisplay.MainDisplayInfo.Width / DeviceDisplay.MainDisplayInfo.Density + "px; height: " + "500" + "px\"></div>" +
+    "</body>" +
+    "</html>",
+
+            };
         }
     }
 }

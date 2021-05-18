@@ -21,7 +21,7 @@
             <Grid x:Name="FeedbackGrid"  IsVisible="false">
             </Grid>
             <StackLayout x:Name="MapLayout" IsVisible="false">
-                <!--<maps:Map x:Name="map" HeightRequest="500" />-->
+                <Grid x:Name="grMap"></Grid>
             </StackLayout>
         </StackLayout>
     </ScrollView>

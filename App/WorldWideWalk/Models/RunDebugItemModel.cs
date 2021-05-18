@@ -4,6 +4,7 @@ using System.Text;
 
 namespace WorldWideWalk.Models
 {
+    [Serializable]
     public class RunDebugModel
     {
         public DateTime Start { get; set; }
@@ -11,7 +12,7 @@ namespace WorldWideWalk.Models
         public List<RunDebugItemModel> RunDebugItems { get; set; }
         public List<string> Errors { get; set; }
     }
-
+    [Serializable]
     public class RunDebugItemModel
     {
         public double Latitude { get; set; }

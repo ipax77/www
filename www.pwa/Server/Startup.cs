@@ -1,0 +1,224 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using System.Linq;
+using www.pwa.Server.Data;
+using www.pwa.Server.Models;
+using System.Collections.Generic;
+using www.pwa.Shared;
+using www.pwa.Server.Services;
+using System;
+
+namespace www.pwa.Server
+{
+    public class Startup
+    {
+        readonly string MyAllowSpecificOrigins = "wwwOrigins";
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+            WwwData.DefaultWalk = Configuration["DefaultWalk"];
+        }
+
+        public IConfiguration Configuration { get; }
+
+        // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(
+                    Configuration.GetConnectionString("DefaultConnection")));
+
+            services.AddDatabaseDeveloperPageExceptionFilter();
+
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddIdentityServer()
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: MyAllowSpecificOrigins,
+                                builder =>
+                                {
+                                    builder.WithOrigins("https://www.pax77.org",
+                                                        "https://localhost:5001"
+                                                    );
+                                });
+            });
+
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            services.AddScoped<DbService>();
+        }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
+        {
+            context.Database.Migrate();
+
+            if (!context.wwwWalks.Any()) {
+                WwwWalk nepalWalk = new WwwWalk() {
+                    Name = "Spendenlauf für Nepal",
+                    Description = "",
+                    TotalDistance = 8400.0f,
+                    isActive = true,
+                    WwwSchools = new List<WwwSchool>() {
+                        new WwwSchool() {
+                            Name = "Gymnasium Geretsried",
+                            WwwClasses = new List<WwwClass>(WwwData.s_classes.Select(s => new WwwClass() {
+                                Name = s
+                            }))
+                        }
+                    },
+                    Points = new List<WwwWalkData>() {
+                        new WwwWalkData() {
+                            Name = "Geretsried",
+                            Description = "Start",
+                            Position = 1,
+                            Latitude = 47.8583,
+                            Longitude = 11.478
+                        },
+                        new WwwWalkData() {
+                            Name = "Graz",
+                            Description = "Österreich",
+                            Position = 2,
+                            Latitude = 46.995,
+                            Longitude = 15.469
+                        },
+                        new WwwWalkData() {
+                            Name = "Novi Sad",
+                            Description = "Нови Сад, Serbien",
+                            Position = 3,
+                            Latitude = 45.2995,
+                            Longitude = 19.8653
+                        },
+                        new WwwWalkData() {
+                            Name = "Plovdiv",
+                            Description = "Пловдив, Bulgarien",
+                            Position = 4,
+                            Latitude = 42.2097,
+                            Longitude = 24.7302
+                        },
+                        new WwwWalkData() {
+                            Name = "Istanbul",
+                            Description = "Türkei",
+                            Position = 5,
+                            Latitude = 41.0027,
+                            Longitude = 29.0121
+                        },
+                        new WwwWalkData() {
+                            Name = "Ankara",
+                            Description = "Türkei",
+                            Position = 6,
+                            Latitude = 41.0097,
+                            Longitude = 32.8931
+                        },
+                        new WwwWalkData() {
+                            Name = "Teheran",
+                            Description = "تهران, Iran",
+                            Position = 7,
+                            Latitude = 35.648,
+                            Longitude = 51.405
+                        },
+                        new WwwWalkData() {
+                            Name = "Aşgabat",
+                            Description = "Turkmenistan",
+                            Position = 8,
+                            Latitude = 37.9269,
+                            Longitude = 58.4061
+                        },
+                        new WwwWalkData() {
+                            Name = "Duschanbe",
+                            Description = "Душанбе, Tajikistan",
+                            Position = 9,
+                            Latitude = 38.5589,
+                            Longitude = 68.784
+                        },
+                        new WwwWalkData() {
+                            Name = "Rawalpindi",
+                            Description = "راولپنڈی‎, Pakistan",
+                            Position = 10,
+                            Latitude = 33.5883,
+                            Longitude = 73.0666
+                        },
+                        new WwwWalkData() {
+                            Name = "Neu-Delhi",
+                            Description = "नई दिल्ली, Indien",
+                            Position = 11,
+                            Latitude = 28.6014,
+                            Longitude = 77.2408
+                        },
+                        new WwwWalkData() {
+                            Name = "Manang",
+                            Description = "Partnerschule Lophel Ling Boarding School (LBS) in Nepal",
+                            Position = 12,
+                            Latitude = 28.6419,
+                            Longitude = 84.0903
+                        },
+
+                    }
+                };
+
+                double distance = 0;
+                WwwWalkData oldpoint = null;
+                foreach (var point in nepalWalk.Points.OrderBy(o => o.Position)) {
+                    if (oldpoint != null)
+                        distance += RunService.GetDistance(oldpoint.Latitude, oldpoint.Longitude, point.Latitude, point.Longitude);
+                    point.Distance = Math.Round(distance / 1000, 2);
+                    oldpoint = point;
+                }
+                nepalWalk.TotalDistance = (float)Math.Round(distance / 1000, 2);
+                context.wwwWalks.Add(nepalWalk);
+                context.SaveChanges();
+            }
+            
+
+
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+                app.UseMigrationsEndPoint();
+                app.UseWebAssemblyDebugging();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
+            }
+
+            app.UseHttpsRedirection();
+            app.UseBlazorFrameworkFiles();
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseCors(MyAllowSpecificOrigins);
+
+            app.UseIdentityServer();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapRazorPages();
+                endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
+            });
+        }
+    }
+}

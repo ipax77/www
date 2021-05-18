@@ -94,5 +94,33 @@ namespace WorldWideWalk
                 Console.WriteLine($"Debug post failed: {e.Message}");
             }
         }
+
+        public async Task<Run> GetDebugData()
+        {
+            string uri = App.API + "gettestdata";
+            var response = await client.GetAsync(uri);
+            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            Run run = new Run();
+            if (response.IsSuccessStatusCode)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                RunDebugModel debugModel = JsonSerializer.Deserialize<RunDebugModel>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                run = new Run()
+                {
+                    RunItems = debugModel.RunDebugItems.Select(s => new RunItem()
+                    {
+                        Latitude = s.Latitude,
+                        Longitude = s.Longitude,
+                        TimeStamp = new DateTime((long)s.TimeStamp).ToUniversalTime(),
+                        Accuracy = s.Accuracy,
+                        Speed = s.Speed
+                    }).ToList()
+                };
+                run.StartTime = debugModel.Start;
+                run.StopTime = debugModel.Stop;
+            }
+            return run;
+        }
     }
 }

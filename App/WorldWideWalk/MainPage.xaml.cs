@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WorldWideWalk.Models;
+using Xamarin.Essentials;
 using Xamarin.Forms;
 
 namespace WorldWideWalk
@@ -18,6 +19,27 @@ namespace WorldWideWalk
         public MainPage()
         {
             InitializeComponent();
+            Debug();
+        }
+
+        private async void Debug()
+        {
+            restService = new RestService();
+            Run = await restService.GetDebugData();
+            string finfo = Run.SetRunInfo();
+            if (!String.IsNullOrEmpty(finfo))
+            {
+                LbTime.Text = finfo;
+                return;
+            }
+            MapWebView wvMap = new MapWebView()
+            {
+                Source = Run.Html,
+                HeightRequest = 500,
+                VerticalOptions = LayoutOptions.FillAndExpand
+            };
+            grMap.Children.Add(wvMap);
+            MapLayout.IsVisible = true;
         }
 
         private void StartRun(object sender, EventArgs e)
