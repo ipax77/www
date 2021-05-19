@@ -66,15 +66,30 @@ namespace www.pwa.Server.Services
                     .ThenInclude(j => j.WwwClasses)
                     .FirstAsync(f => f.Guid == guid);
                 if (walk == null)
-                    return null;
+                    return new WwwFeedback()
+                    {
+                        Error = "Lauf nicht gefunden."
+                    };
+
+                if (walk.Credential != data.Credential)
+                    return new WwwFeedback()
+                    {
+                        Error = "Falsches Passwort."
+                    };
 
                 var school = walk.WwwSchools.FirstOrDefault(f => f.Name == data.School);
                 if (school == null)
-                    return null;
+                    return new WwwFeedback()
+                    {
+                        Error = "Schule nicht gefunden."
+                    };
 
                 WwwClass wwwClass = school.WwwClasses.FirstOrDefault(f => f.Name == data.SchoolClass);
                 if (wwwClass == null)
-                    return null;
+                    return new WwwFeedback()
+                    {
+                        Error = "Klasse nicht gefunden."
+                    };
 
                 WwwEntity entity = await context.wwwEntities
                     .Include(i => i.WwwClass)
@@ -137,7 +152,7 @@ namespace www.pwa.Server.Services
                 semaphoreSlim.Release();
             }
             return new WwwFeedback() {
-                Error = "Server fehler. Bitter versuche es später noch einmal."
+                Error = "Server Fehler. Bitter versuche es später noch einmal."
             };
         }
 
@@ -167,6 +182,7 @@ namespace www.pwa.Server.Services
             }
             feedback.YearPosition = YearList.Select(s => s.Value).OrderByDescending(o => o).ToList().FindIndex(f => f == feedback.YearTotal) + 1;
             feedback.YearPercentage = MathF.Round(feedback.YearTotal * 100 / walk.TotalRuns, 2);
+            feedback.CurrentDistance = MathF.Round(walk.TotalRuns, 2);
             return feedback;
         }
 

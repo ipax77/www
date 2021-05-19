@@ -6,7 +6,7 @@
 
 <div>
 @if (Walk != null && !String.IsNullOrEmpty(Walk.NextTarget)) {
-    <h4 class="text-white-50">Zurückgelegt: @Walk.CurrentDistance - Nächstes Ziel: @Walk.NextTarget</h4>
+    <h4 class="text-white-50">Es wurden @Walk.CurrentDistance von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: @Walk.NextTarget</h4>
 }
 </div>
 <div class="mapcontainer" >

@@ -18,7 +18,7 @@ namespace WorldWideWalk
             client = new HttpClient();
         }
 
-        public async Task<List<Walk>> GetWalks()
+        public async Task<List<WalkAppModel>> GetWalks()
         {
             Uri uri = new Uri(string.Format(App.API, "getwalks"));
 
@@ -28,37 +28,36 @@ namespace WorldWideWalk
                 if (response.IsSuccessStatusCode)
                 {
                     string content = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<List<Walk>>(content);
+                    return JsonSerializer.Deserialize<List<WalkAppModel>>(content);
                 }
             } catch
             {
 
             }
-            return new List<Walk>()
+            return new List<WalkAppModel>()
             {
-                new Walk()
+                new WalkAppModel()
                 {
                     Name = "WorldWideWalk"
                 }
             };
         }
 
-        public async Task<Walk> GetWalk(string guid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA")
+        public async Task<WalkAppModel> GetWalk(string guid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA")
         {
-            Uri uri = new Uri(string.Format(App.API, $"walk/{guid}"));
-
+            string uri = App.API + $"walk/{guid}";
             try
             {
                 var response = await client.GetAsync(uri);
                 if (response.IsSuccessStatusCode)
                 {
                     string content = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<Walk>(content);
+                    return JsonSerializer.Deserialize<WalkAppModel>(content, new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
                 }
             }
-            catch
+            catch (Exception e)
             {
-
+                Console.WriteLine(e.Message);
             }
             return null;
         }
@@ -76,9 +75,12 @@ namespace WorldWideWalk
                 var resContent = await response.Content.ReadAsStringAsync();
                 feedback = JsonSerializer.Deserialize<WwwFeedback>(resContent);
             }
-            catch
+            catch (Exception e)
             {
-                
+                return new WwwFeedback()
+                {
+                    Error = $"Fehler beim übertragen der Daten. {e.Message}"
+                };
             }
             return feedback;
         }

@@ -7,8 +7,7 @@ namespace WorldWideWalk
     public partial class App : Application
     {
         // Config
-        // public const string API = "https://www.pax77.org/www/api/";
-        public const string API = "https://127.0.0.1:5001/WwwRun/";
+        public const string API = "https://www.pax77.org/www/WwwRun/";
         public static TimeSpan MaxRunTime = TimeSpan.FromHours(2);
         public const double MaxSpeedInKmH = 40;
 

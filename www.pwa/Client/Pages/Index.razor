@@ -1,12 +1,113 @@
 ﻿@page "/"
+@using www.pwa.Shared
+@using System.Net.Http.Json
+@using System.Text.Json
+@using Microsoft.Extensions.Logging
+@inject IHttpClientFactory httpClient
+@inject ILogger<Index> logger
 
 <div class="d-flex flex-row">
     <div class="flex-shrink-1 p-2">
         <img class="img-fluid" src="images/www_small.png" />
     </div>
     <div class="justify-content-center align-self-center">
-        <h3 class="text-white-50">Spendenlauf für Nepal</h3>
+        @if (Walk != null) {
+            <h3 class="text-white-50">@Walk.Name</h3>
+        }
     </div>
 </div>
 
-<MapComponent></MapComponent>
+@if (Walk != null) {
+    <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
+    @if (Feedback != null) {
+        <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
+    }    
+    <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
+    <RunFormComponent 
+        Walk="Walk" 
+        editContext="editContext" 
+        Run="Run" 
+        OnValidSubmit="HandleValidSubmit" 
+        OnInvalidSubmit="HandleInvalidSubmit">
+    </RunFormComponent>
+}
+
+@code {
+    WalkAppModel Walk = null;
+    EntityRunFormData Run = null;
+    EditContext editContext;
+    WwwFeedback Feedback = null;
+    HttpClient Http;
+    string badgeClass = "d-none";
+    string badgeInfo = "";
+    string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
+    MapComponent mapComponent;
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        Run = new EntityRunFormData();
+        editContext = new EditContext(Run);
+        Http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
+        Walk = await Http.GetFromJsonAsync<WalkAppModel>($"WwwRun/walk/{walkGuid}",
+             new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        Run.Walk = walkGuid;
+        Run.School = Walk.Schools.First().Name;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        badgeClass = "d-none";
+        badgeInfo = "";
+
+        try {
+            var response = await Http.PostAsJsonAsync<EntityRunFormData>("WwwRun", Run);
+            if (response.IsSuccessStatusCode) {
+                var content = await response.Content.ReadAsStringAsync();
+                Feedback = JsonSerializer.Deserialize<WwwFeedback>(content
+                    , new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            } else {
+                badgeClass = "badge bg-warning";
+                badgeInfo = $"Fehler beim übertragen der Daten. {response.StatusCode}";
+                Feedback = null;
+                StateHasChanged();
+                return;
+            }
+        } catch (Exception e) {
+            badgeClass = "badge bg-warning";
+            badgeInfo = $"Fehler beim übertragen der Daten. {e.Message}";
+            Feedback = null;
+            return;
+        }
+
+        if (Feedback == null)
+        {
+            badgeClass = "badge bg-warning";
+            badgeInfo = "Datenbank Fehler, bitter versuche es später noch einmal.";
+        }
+        else
+        {
+            if (!String.IsNullOrEmpty(Feedback.Error)) {
+                badgeClass = "badge bg-warning";
+                badgeInfo = Feedback.Error;
+                Feedback = null;
+            }
+            else
+            {
+                badgeClass = "badge bg-success";
+                badgeInfo = "Der Lauf wurde erfolgreich gespeichert.";
+                Run.Credential = String.Empty;
+                Walk.CurrentDistance = Feedback.CurrentDistance;
+                mapComponent.ShowCurrent(Feedback);
+            }
+        }
+        StateHasChanged();
+    }
+    private void HandleInvalidSubmit()
+    {
+        // await _js.InvokeVoidAsync("Scroll", "runform");
+    }
+    
+}
+
+        

@@ -16,6 +16,7 @@ using www.pwa.Server.Services;
 using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
+using System.Globalization;
 
 namespace www.pwa.Server
 {
@@ -70,15 +71,19 @@ namespace www.pwa.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
         {
+            CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+            CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
+            
             context.Database.Migrate();
 
             if (!context.wwwWalks.Any()) {
                 WwwWalk nepalWalk = new WwwWalk() {
-                    Name = "Spendenlauf für Nepal",
+                    Name = "Sponsorenlauf für Nepal",
                     Guid = new Guid("7A40C465-BDC8-4373-B6BE-6E49C10D5ECA"),
                     Description = "",
                     TotalDistance = 8400.0f,
                     isActive = true,
+                    Credential = Configuration["DefaultCredential"],
                     WwwSchools = new List<WwwSchool>() {
                         new WwwSchool() {
                             Name = "Gymnasium Geretsried",

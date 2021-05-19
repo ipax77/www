@@ -18,6 +18,8 @@ namespace WorldWideWalk.Models
         public int SchoolPosition { get; set; }
         public float SchoolPercentage { get; set; }
         public float SchoolTotal { get; set; }
+        public string Error { get; set; }
+        public float CurrentDistance { get; set; }
 
     }
 }

@@ -9,7 +9,7 @@
                 <Label Text="WorldWideWalk" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
             </Frame>
             <Frame BackgroundColor="Yellow" Padding="0" CornerRadius="0">
-                <Label Text="Es wurden bereits 0 km zurückgelegt." FontSize="16" Padding="30,10,30,10"/>
+                <Label x:Name="LbCurrent" Text="Es wurden bereits 0 km zurückgelegt." FontSize="16" Padding="30,10,30,10"/>
             </Frame>
             <Button x:Name="BtnStart" Text="Lauf starten" Clicked="StartRun" />
             <Button x:Name="BtnStop" Text="Lauf stoppen" IsEnabled="False" />
@@ -17,6 +17,13 @@
                 <Label x:Name="LbTime"></Label>
                 <Label x:Name="LbDistance"></Label>
                 <Label x:Name="LbCount"></Label>
+            </StackLayout>
+            <StackLayout x:Name="SubmitLayout" IsVisible="true">
+                <Picker x:Name="ClassPicker"></Picker>
+                <Entry x:Name="PseudonymEntry" IsSpellCheckEnabled="false" IsTextPredictionEnabled="false" Placeholder="Pseudonym" />
+                <Entry x:Name="PasswordEntry" IsSpellCheckEnabled="false" IsTextPredictionEnabled="false" IsPassword="true" Placeholder="Passwort" />
+                <Label Text="{Binding ValidationMessage}" FontSize="Medium" TextColor="Red"></Label>
+                <Button Text="Senden" Clicked="Submit_Clicked"></Button>
             </StackLayout>
             <Grid x:Name="FeedbackGrid"  IsVisible="false">
             </Grid>

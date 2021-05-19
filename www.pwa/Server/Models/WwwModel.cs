@@ -20,6 +20,7 @@ namespace www.pwa.Server.Models
         public int TotalEntities { get; set; } = 0;
         public bool isActive { get; set; }
         public WwwWalkData NextPoint { get; set; }
+        public string Credential { get; set; }
         public virtual ICollection<WwwSchool> WwwSchools { get; set; }
         public virtual ICollection<WwwWalkData> Points { get; set; }
     }

@@ -8,6 +8,7 @@ namespace www.pwa.Shared
     public class WalkAppModel
     {
         public string Name { get; set; }
+        public string Guid { get; set; }
         public string Description { get; set; }
         public double TotalDistance { get; set; }
         public double CurrentDistance { get; set; }

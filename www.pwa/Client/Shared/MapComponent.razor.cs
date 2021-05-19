@@ -18,19 +18,14 @@ namespace www.pwa.Client.Shared
     public partial class MapComponent : ComponentBase
     {
         [Inject]
-        protected IHttpClientFactory httpClient { get; set; }
-        [Inject]
         protected IJSRuntime _js { get; set; }
         [Inject]
         protected ILogger<MapComponent> logger { get; set; }
 
         [Parameter]
-        public string Guid { get; set; } = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
-
-        WalkAppModel Walk;
+        public WalkAppModel Walk { get; set; }
         private static Action action;
         TextEncoderSettings encoderSettings;
-        double CurrentDistance;
 
         protected override void OnInitialized()
         {
@@ -44,29 +39,12 @@ namespace www.pwa.Client.Shared
         {
             if (firstRender)
             {
-                var http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
-
-                try
-                {
-                    Walk = await http.GetFromJsonAsync<WalkAppModel>($"WwwRun/walk/{Guid}",
-                        new JsonSerializerOptions()
-                        {
-                            PropertyNameCaseInsensitive = true,
-                            Encoder = JavaScriptEncoder.Create(encoderSettings)
-                        });
-
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine($"Walk get error: {e.Message}");
-                }
                 await _js.InvokeVoidAsync("LoadMap");
             }
         }
 
-        private void ShowCurrent()
+        public void ShowCurrent(WwwFeedback feedback = null)
         {
-            Walk.CurrentDistance = CurrentDistance;
             (var next, var current) = Walk.GetNextAndCurrentPoint();
             Walk.NextTarget = next.Name;
             List<double[]> line = new List<double[]>();

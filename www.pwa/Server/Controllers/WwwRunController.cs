@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using www.pwa.Server.Data;
+using www.pwa.Server.Filters;
 using www.pwa.Server.Services;
 using www.pwa.Shared;
 
@@ -85,7 +86,8 @@ namespace www.pwa.Server.Controllers
             return data;
         }
 
-        [HttpPut]
+        [HttpPost]
+        [RequestLimit("Submit", NoOfRequest = 5, Seconds = 10)]
         public async Task<ActionResult<WwwFeedback>> Submit(EntityRunFormData data) {
             WwwFeedback feedback = await dbService.Submit(context, data);
             if (feedback == null)
