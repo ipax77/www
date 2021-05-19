@@ -449,5 +449,23 @@ namespace www.pwa.Server.Services
                 p = 100;
             return (total, done, p);
         }
+
+        public static int GetClassYear(string name) {
+            int Year = 0;
+            string year = String.Empty;
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (Char.IsDigit(name[i]))
+                    year += name[i];
+                else
+                    break;
+            }
+            int iyear = 0;
+            if (int.TryParse(year, out iyear))
+            {
+                Year = iyear;
+            }
+            return Year;
+        }
     }
 }

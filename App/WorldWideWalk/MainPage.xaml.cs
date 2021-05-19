@@ -17,34 +17,21 @@ namespace WorldWideWalk
         private Run Run = new Run();
         private WalkAppModel Walk;
         private EntityRunFormData RunData;
-        private string validationMessage = String.Empty;
         private ICollection<string> validationMessages = new List<string>();
-
-        public string ValidationMessage
-        {
-            get { return validationMessage; }
-            set
-            {
-                validationMessage = value;
-                OnPropertyChanged(nameof(ValidationMessage));
-            }
-        }
+        public string ValidationMessage { get; set; }
+        private string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
 
         public MainPage()
         {
             InitializeComponent();
+            PasswordEntry.Completed += PasswordEntry_Completed;
+            PseudonymEntry.Completed += PseudonymEntry_Completed;
             restService = new RestService();
             GetWalk();
-            Debug();
         }
 
         private async void Debug()
         {
-            if (Walk == null)
-            {
-                LbTime.Text = "Fehler beim Laden.";
-                return;
-            }
             Run = await restService.GetDebugData();
             string finfo = Run.SetRunInfo();
             if (!String.IsNullOrEmpty(finfo))
@@ -56,16 +43,19 @@ namespace WorldWideWalk
             {
                 Source = Run.Html,
                 HeightRequest = 500,
-                VerticalOptions = LayoutOptions.FillAndExpand
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand
             };
             grMap.Children.Add(wvMap);
-            MapLayout.IsVisible = true;
+            // MapLayout.IsVisible = true;
+            InitRunData();
         }
 
         private async void GetWalk()
         {
-            Walk = await restService.GetWalk();
+            Walk = await restService.GetWalk(walkGuid);
             SetCurrentText();
+            Debug();
         }
 
         private void StartRun(object sender, EventArgs e)
@@ -118,29 +108,35 @@ namespace WorldWideWalk
             if (isValid)
             {
                 ValidationMessage = "";
+                LbValidation.Text = ValidationMessage;
                 WwwFeedback feedback = await restService.SubmitRun(RunData);
                 if (feedback == null)
                 {
                     ValidationMessage = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
+                    LbValidation.Text = ValidationMessage;
                 }
                 else
                 {
                     if (!String.IsNullOrEmpty(feedback.Error))
                     {
                         ValidationMessage = feedback.Error;
+                        LbValidation.Text = ValidationMessage;
                     }
                     else
                     {
                         SubmitLayout.IsVisible = false;
                         SetFeedbackGrid(feedback);
-                        Walk.CurrentDistance = feedback.CurrentDistance;
+                        Walk.CurrentDistance = Math.Round(feedback.CurrentDistance, 2);
                         SetCurrentText();
                     }
                 }
                 MapLayout.IsVisible = true;
             }
             else
+            {
                 ValidationMessage = String.Join(Environment.NewLine, validationMessages);
+                LbValidation.Text = ValidationMessage;
+            }
         }
 
         private void LocationManager_LocationUpdated(object sender, Models.LocationUpdatedEventArgs e)
@@ -191,20 +187,30 @@ namespace WorldWideWalk
                 ValidationMessage = "";
             else
                 ValidationMessage = String.Join(Environment.NewLine, validationMessages);
-
+            
+            LbValidation.Text = ValidationMessage;
         }
 
         private void PasswordEntry_Completed(object sender, EventArgs e)
         {
             RunData.Credential = ((Entry)sender).Text;
+            bool isValid = EntityRunFormData.Validate(RunData, out validationMessages);
+            if (isValid)
+                ValidationMessage = "";
+            else
+                ValidationMessage = String.Join(Environment.NewLine, validationMessages);
+
+            LbValidation.Text = ValidationMessage;
         }
 
         void InitRunData()
         {
             RunData = new EntityRunFormData()
             {
-                Walk = Walk.Name,
+                Walk = walkGuid,
                 School = Walk.Schools.First().Name,
+                Distance = (float)(Run.Distance / 1000),
+                Time = Run.StopTime
             };
             InitClassPicker();
         }
@@ -314,7 +320,8 @@ namespace WorldWideWalk
 
         void SetCurrentText()
         {
-            LbCurrent.Text = $"Es wurden {Walk.CurrentDistance} von {Walk.TotalDistance} km zurückgelet.";
+            LbWalk.Text = Walk.Name;
+            LbCurrent.Text = $"Es wurden {Walk.CurrentDistance} von {Walk.TotalDistance} km zurückgelegt.";
         }
 
         public void Dispose()
@@ -324,6 +331,8 @@ namespace WorldWideWalk
                 locationManager.StopLocationUpdates();
                 locationManager.LocationUpdated -= LocationManager_LocationUpdated;
             }
+            PasswordEntry.Completed -= PasswordEntry_Completed;
+            PseudonymEntry.Completed -= PseudonymEntry_Completed;
         }
     }
 }

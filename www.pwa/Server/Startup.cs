@@ -88,7 +88,8 @@ namespace www.pwa.Server
                         new WwwSchool() {
                             Name = "Gymnasium Geretsried",
                             WwwClasses = new List<WwwClass>(WwwData.s_classes.Select(s => new WwwClass() {
-                                Name = s
+                                Name = s,
+                                Year = DbService.GetClassYear(s)
                             }))
                         }
                     },
