@@ -15,40 +15,46 @@ namespace WorldWideWalk
         private ILocationManager locationManager;
         private IRestService restService;
         private Run Run = new Run();
+        private Run DebugRun;
         private WalkAppModel Walk;
         private EntityRunFormData RunData;
         private ICollection<string> validationMessages = new List<string>();
         public string ValidationMessage { get; set; }
         private string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
+        private string walkUri = "https://www.pax77.org/www";
 
         public MainPage()
         {
             InitializeComponent();
             PasswordEntry.Completed += PasswordEntry_Completed;
+            PasswordEntry.TextChanged += PasswordEntry_TextChanged;
             PseudonymEntry.Completed += PseudonymEntry_Completed;
+            PseudonymEntry.TextChanged += PseudonymEntry_TextChanged;
             restService = new RestService();
             GetWalk();
         }
 
+        private void PseudonymEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunData.Identifier = PseudonymEntry.Text;
+        }
+
+        private void PasswordEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunData.Credential = PasswordEntry.Text;
+        }
+
+        private async void OpenLink(object sender, EventArgs e)
+        {
+            try
+            {
+                await Browser.OpenAsync(walkUri, BrowserLaunchMode.SystemPreferred);
+            } catch { }
+        }
+
         private async void Debug()
         {
-            Run = await restService.GetDebugData();
-            string finfo = Run.SetRunInfo();
-            if (!String.IsNullOrEmpty(finfo))
-            {
-                LbTime.Text = finfo;
-                return;
-            }
-            MapWebView wvMap = new MapWebView()
-            {
-                Source = Run.Html,
-                HeightRequest = 500,
-                VerticalOptions = LayoutOptions.FillAndExpand,
-                HorizontalOptions = LayoutOptions.FillAndExpand
-            };
-            grMap.Children.Add(wvMap);
-            // MapLayout.IsVisible = true;
-            InitRunData();
+            DebugRun = await restService.GetDebugData();
         }
 
         private async void GetWalk()
@@ -56,13 +62,15 @@ namespace WorldWideWalk
             Walk = await restService.GetWalk(walkGuid);
             SetCurrentText();
             Debug();
+            activityIndicator.IsRunning = false;
+            activityIndicator.IsVisible = false;
         }
 
         private void StartRun(object sender, EventArgs e)
         {
             SubmitLayout.IsVisible = false;
             MapLayout.IsVisible = false;
-            FeedbackGrid.IsVisible = false;
+            FeedbackLayout.IsVisible = false;
             grMap.Children.Clear();
             LbTime.Text = "";
             LbDistance.Text = "";
@@ -87,7 +95,11 @@ namespace WorldWideWalk
             locationManager.StopLocationUpdates();
             locationManager.LocationUpdated -= LocationManager_LocationUpdated;
             Run.StopTime = DateTime.UtcNow;
-            restService = new RestService();
+
+            // DEBUG
+            Run = DebugRun;
+
+            Run.SetRunInfo();
 
             if (sender != null)
             {
@@ -96,14 +108,23 @@ namespace WorldWideWalk
             LbDistance.Text = "Zurückgelegt: " + Math.Round(Run.Distance, 2).ToString() + " m";
 
             InitRunData();
+            SubmitLayout.IsVisible = true;
+            scrollView.ResolveLayoutChanges();
 
-            // DEBUG
-            await restService.SubmitDebugData(Run);
-            LbCount.Text = Run.RunItems.Count.ToString();
+            // await restService.SubmitDebugData(Run);
+            // LbCount.Text = Run.RunItems.Count.ToString();
         }
 
         async void Submit_Clicked(object sender, EventArgs e)
         {
+            activityIndicator.IsVisible = true;
+            activityIndicator.IsRunning = true;
+            if (String.IsNullOrEmpty(RunData.Identifier))
+                RunData.Identifier = PseudonymEntry.Text;
+
+            if (String.IsNullOrEmpty(RunData.Credential))
+                RunData.Credential = PasswordEntry.Text;
+
             bool isValid = EntityRunFormData.Validate(RunData, out validationMessages);
             if (isValid)
             {
@@ -137,6 +158,9 @@ namespace WorldWideWalk
                 ValidationMessage = String.Join(Environment.NewLine, validationMessages);
                 LbValidation.Text = ValidationMessage;
             }
+            InitMap();
+            activityIndicator.IsRunning = false;
+            activityIndicator.IsVisible = false;
         }
 
         private void LocationManager_LocationUpdated(object sender, Models.LocationUpdatedEventArgs e)
@@ -203,6 +227,21 @@ namespace WorldWideWalk
             LbValidation.Text = ValidationMessage;
         }
 
+        void InitMap()
+        {
+            grMap.Children.Clear();
+            MapLayout.IsVisible = true;
+            MapWebView wvMap = new MapWebView()
+            {
+                Source = Run.Html,
+                HeightRequest = 500,
+                VerticalOptions = LayoutOptions.FillAndExpand,
+                HorizontalOptions = LayoutOptions.FillAndExpand
+            };
+            grMap.Children.Add(wvMap);
+            grMap.ResolveLayoutChanges();
+        }
+
         void InitRunData()
         {
             RunData = new EntityRunFormData()
@@ -219,7 +258,7 @@ namespace WorldWideWalk
         {
             ClassPicker.Title = "Klasse";
             ClassPicker.Items.Clear();
-            foreach (var ent in Walk.Schools.First(f => f.Name == RunData.School).SchoolClasses.Select(s => s.Name))
+            foreach (var ent in Walk.Schools.First(f => f.Name == RunData.School).SchoolClasses.Select(s => s.Name).OrderBy(o => o))
             {
                 ClassPicker.Items.Add(ent);
             }
@@ -315,7 +354,7 @@ namespace WorldWideWalk
                 Text = $"{feedback.YearPosition}"
             }, 3, 3);
 
-            FeedbackGrid.IsVisible = true;
+            FeedbackLayout.IsVisible = true;
         }
 
         void SetCurrentText()

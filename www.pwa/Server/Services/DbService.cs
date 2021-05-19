@@ -180,6 +180,7 @@ namespace www.pwa.Server.Services
                 if (year == wwwclass.Year)
                     feedback.YearTotal = sum;
             }
+            feedback.YearTotal = MathF.Round(feedback.YearTotal, 2);
             feedback.YearPosition = YearList.Select(s => s.Value).OrderByDescending(o => o).ToList().FindIndex(f => f == feedback.YearTotal) + 1;
             feedback.YearPercentage = MathF.Round(feedback.YearTotal * 100 / walk.TotalRuns, 2);
             feedback.CurrentDistance = MathF.Round(walk.TotalRuns, 2);
