@@ -28,7 +28,6 @@
             <StackLayout>
                 <Label x:Name="LbTime"></Label>
                 <Label x:Name="LbDistance"></Label>
-                <Label x:Name="LbCount"></Label>
             </StackLayout>
             <StackLayout x:Name="SubmitLayout" IsVisible="false">
                 <Picker x:Name="ClassPicker"></Picker>

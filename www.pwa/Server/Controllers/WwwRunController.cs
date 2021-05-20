@@ -58,7 +58,7 @@ namespace www.pwa.Server.Controllers
                 Name = walk.Name,
                 Description = walk.Description,
                 TotalDistance = walk.TotalDistance,
-                CurrentDistance = MathF.Round(walk.TotalRuns, 2),
+                CurrentDistance = Math.Round(walk.TotalRuns, 2),
                 Schools = new List<School>(walk.WwwSchools.Select(t => new School()
                 {
                     Name = t.Name,

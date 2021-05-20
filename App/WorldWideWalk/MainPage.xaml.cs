@@ -34,15 +34,7 @@ namespace WorldWideWalk
             GetWalk();
         }
 
-        private void PseudonymEntry_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            RunData.Identifier = PseudonymEntry.Text;
-        }
 
-        private void PasswordEntry_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            RunData.Credential = PasswordEntry.Text;
-        }
 
         private async void OpenLink(object sender, EventArgs e)
         {
@@ -54,14 +46,14 @@ namespace WorldWideWalk
 
         private async void Debug()
         {
-            DebugRun = await restService.GetDebugData();
+            // DebugRun = await restService.GetDebugData();
         }
 
         private async void GetWalk()
         {
             Walk = await restService.GetWalk(walkGuid);
             SetCurrentText();
-            Debug();
+            // Debug();
             activityIndicator.IsRunning = false;
             activityIndicator.IsVisible = false;
         }
@@ -74,7 +66,6 @@ namespace WorldWideWalk
             grMap.Children.Clear();
             LbTime.Text = "";
             LbDistance.Text = "";
-            LbCount.Text = "";
             BtnStart.IsEnabled = false;
             BtnStart.Clicked -= StartRun;
             BtnStop.IsEnabled = true;
@@ -86,7 +77,7 @@ namespace WorldWideWalk
             locationManager.LocationUpdated += LocationManager_LocationUpdated;
         }
 
-        private async void StopRun(object sender, EventArgs e)
+        private void StopRun(object sender, EventArgs e)
         {
             BtnStart.IsEnabled = true;
             BtnStart.Clicked += StartRun;
@@ -95,9 +86,6 @@ namespace WorldWideWalk
             locationManager.StopLocationUpdates();
             locationManager.LocationUpdated -= LocationManager_LocationUpdated;
             Run.StopTime = DateTime.UtcNow;
-
-            // DEBUG
-            Run = DebugRun;
 
             Run.SetRunInfo();
 
@@ -110,9 +98,6 @@ namespace WorldWideWalk
             InitRunData();
             SubmitLayout.IsVisible = true;
             scrollView.ResolveLayoutChanges();
-
-            // await restService.SubmitDebugData(Run);
-            // LbCount.Text = Run.RunItems.Count.ToString();
         }
 
         async void Submit_Clicked(object sender, EventArgs e)
@@ -225,6 +210,16 @@ namespace WorldWideWalk
                 ValidationMessage = String.Join(Environment.NewLine, validationMessages);
 
             LbValidation.Text = ValidationMessage;
+        }
+
+        private void PseudonymEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunData.Identifier = PseudonymEntry.Text;
+        }
+
+        private void PasswordEntry_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RunData.Credential = PasswordEntry.Text;
         }
 
         void InitMap()
@@ -372,6 +367,8 @@ namespace WorldWideWalk
             }
             PasswordEntry.Completed -= PasswordEntry_Completed;
             PseudonymEntry.Completed -= PseudonymEntry_Completed;
+            PasswordEntry.TextChanged -= PasswordEntry_TextChanged;
+            PseudonymEntry.TextChanged -= PseudonymEntry_TextChanged;
         }
     }
 }

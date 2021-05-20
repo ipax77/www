@@ -100,63 +100,63 @@ namespace WorldWideWalk
         }
 
         // DEBUG
-        public async Task SubmitDebugData(Run run)
-        {
-            string uri = App.API + "/testrunitem";
-            RunDebugModel data = new RunDebugModel()
-            {
-                Start = run.StartTime,
-                Stop = run.StopTime,
-                RunDebugItems = new List<RunDebugItemModel>(run.RunItems.Select(s => new RunDebugItemModel()
-                {
-                    Latitude = s.Latitude,
-                    Longitude = s.Longitude,
-                    Accuracy = s.Accuracy,
-                    TimeStamp = (double)s.TimeStamp.ToUnixTimeMilliseconds()
-                })),
-                Errors = new List<string>(run.RunItems.Where(x => !String.IsNullOrEmpty(x.Error)).Select(s => s.Error))
-            };
-            var json = JsonSerializer.Serialize(data);
-            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            try
-            {
-                var response = await client.PostAsync(uri, content);
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"Debug post failed: {response.StatusCode}");
-                }
-            } catch (Exception e)
-            {
-                Console.WriteLine($"Debug post failed: {e.Message}");
-            }
-        }
+        //public async Task SubmitDebugData(Run run)
+        //{
+        //    string uri = App.API + "/testrunitem";
+        //    RunDebugModel data = new RunDebugModel()
+        //    {
+        //        Start = run.StartTime,
+        //        Stop = run.StopTime,
+        //        RunDebugItems = new List<RunDebugItemModel>(run.RunItems.Select(s => new RunDebugItemModel()
+        //        {
+        //            Latitude = s.Latitude,
+        //            Longitude = s.Longitude,
+        //            Accuracy = s.Accuracy,
+        //            TimeStamp = (double)s.TimeStamp.ToUnixTimeMilliseconds()
+        //        })),
+        //        Errors = new List<string>(run.RunItems.Where(x => !String.IsNullOrEmpty(x.Error)).Select(s => s.Error))
+        //    };
+        //    var json = JsonSerializer.Serialize(data);
+        //    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+        //    try
+        //    {
+        //        var response = await client.PostAsync(uri, content);
+        //        if (!response.IsSuccessStatusCode)
+        //        {
+        //            Console.WriteLine($"Debug post failed: {response.StatusCode}");
+        //        }
+        //    } catch (Exception e)
+        //    {
+        //        Console.WriteLine($"Debug post failed: {e.Message}");
+        //    }
+        //}
 
-        public async Task<Run> GetDebugData()
-        {
-            string uri = App.API + "/gettestdata";
-            var response = await client.GetAsync(uri);
-            DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        //public async Task<Run> GetDebugData()
+        //{
+        //    string uri = App.API + "/gettestdata";
+        //    var response = await client.GetAsync(uri);
+        //    DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-            Run run = new Run();
-            if (response.IsSuccessStatusCode)
-            {
-                var content = await response.Content.ReadAsStringAsync();
-                RunDebugModel debugModel = JsonSerializer.Deserialize<RunDebugModel>(content, jsonOptions);
-                run = new Run()
-                {
-                    RunItems = debugModel.RunDebugItems.Select(s => new RunItem()
-                    {
-                        Latitude = s.Latitude,
-                        Longitude = s.Longitude,
-                        TimeStamp = new DateTime((long)s.TimeStamp).ToUniversalTime(),
-                        Accuracy = s.Accuracy,
-                        Speed = s.Speed
-                    }).ToList()
-                };
-                run.StartTime = debugModel.Start;
-                run.StopTime = debugModel.Stop;
-            }
-            return run;
-        }
+        //    Run run = new Run();
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var content = await response.Content.ReadAsStringAsync();
+        //        RunDebugModel debugModel = JsonSerializer.Deserialize<RunDebugModel>(content, jsonOptions);
+        //        run = new Run()
+        //        {
+        //            RunItems = debugModel.RunDebugItems.Select(s => new RunItem()
+        //            {
+        //                Latitude = s.Latitude,
+        //                Longitude = s.Longitude,
+        //                TimeStamp = new DateTime((long)s.TimeStamp).ToUniversalTime(),
+        //                Accuracy = s.Accuracy,
+        //                Speed = s.Speed
+        //            }).ToList()
+        //        };
+        //        run.StartTime = debugModel.Start;
+        //        run.StopTime = debugModel.Stop;
+        //    }
+        //    return run;
+        //}
     }
 }
