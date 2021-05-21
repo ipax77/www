@@ -1,0 +1,100 @@
+
+<div style="min-height: 250px; max-width: 800px;">
+@if (Schools.Any()) {
+    <table class="table table-dark table-hover">
+        <thead>
+            <tr>
+                <th>Schule</th>
+                <th>Gesamte Distanz</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var school in Schools.OrderByDescending(o => o.Distance)) {
+                <tr class="pointer" @onclick="@(() => ShowSchool(school.Id))">
+                    <td>@school.Name</td>
+                    <td>@school.Distance</td>
+                </tr>
+                @if (schools.Contains(school)) {
+                    <tr class="mt-2" id="@($"school_{school.Id}")">
+                        <td colspan="100%">
+                            <div class="d-inline-block">
+                                <h4 class="d-inline">Klassen der Schule @school.Name</h4>
+                                <span class="float-right ml-2 oi oi-x text-danger pointer" @onclick="@(() => ShowSchool(school.Id))"></span>
+                            </div>
+                            <table class="table table-dark table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Klasse</th>
+                                        <th>Gesamte Distanz</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var schoolClass in school.Classes.Where(x => x.Distance > 0)) {
+                                        <tr class="pointer" @onclick="@(() => ShowClass(school.Id, schoolClass.Id))">
+                                            <td>@schoolClass.Name</td>
+                                            <td>@schoolClass.Distance</td>
+                                        </tr>
+                                        @if (schoolClasses.Contains(schoolClass)) {
+                                            <tr class="mt-2" id="@($"class_{schoolClass.Id}")">
+                                                <td colspan="100%">
+                                                    <div class="d-inline-block">
+                                                        <h4 class="d-inline">Pseudonyme der Klasse @schoolClass.Name</h4>
+                                                        <span class="float-right ml-2 oi oi-x text-danger pointer" @onclick="@(() => ShowClass(school.Id, schoolClass.Id))"></span>
+                                                    </div>
+                                                    <table class="table table-dark table-hover">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Pseudonym</th>
+                                                                <th>Gesamte Distanz</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var ent in schoolClass.Entities) {
+                                                                <tr class="pointer" @onclick="@(() => ShowEntity(schoolClass.Id, ent.Id))">
+                                                                    <td>@ent.Name</td>
+                                                                    <td>@ent.Distance</td>
+                                                                </tr>
+                                                                @if (entities.Contains(ent)) {
+                                                                    <tr class="mt-2" id="@($"ent_{ent.Id}")">
+                                                                        <td colspan="100%">
+                                                                            <div class="d-inline-block">
+                                                                                <h4 class="d-inline">Strecken von @ent.Name</h4>
+                                                                                <span class="float-right ml-2 oi oi-x text-danger pointer" @onclick="@(() => ShowEntity(schoolClass.Id, ent.Id))"></span>
+                                                                            </div>
+                                                                            <table class="table table-dark table-striped">
+                                                                                <thead>
+                                                                                    <tr>
+                                                                                        <th>Datum</th>
+                                                                                        <th>Distanz (km)</th>
+                                                                                    </tr>
+                                                                                </thead>
+                                                                                <tbody>
+                                                                                    @foreach (var run in ent.Runs) {
+                                                                                        <tr>
+                                                                                            <td>@run.Time.ToString("yyyy-MM-dd")</td>
+                                                                                            <td>@run.Distance</td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                </tbody>
+                                                                            </table>                                                                 
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+</div>

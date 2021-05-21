@@ -79,6 +79,85 @@ namespace www.pwa.Server.Controllers
             return walkModel;
         }
 
+        [HttpGet("tabledata/schools/{walkguid}")] 
+        public async Task<ActionResult<List<SchoolInfoModel>>> GetWalkSchoolsData(string walkguid) {
+            Guid guid;
+            if (!Guid.TryParse(walkguid, out guid))
+                return NotFound();
+            var walk = await context.wwwWalks
+                .Include(i => i.WwwSchools)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Guid == guid);
+            
+            if (walk == null || !walk.WwwSchools.Any())
+                return NotFound();
+            return new List<SchoolInfoModel>(walk.WwwSchools.Select(s => new SchoolInfoModel() {
+                Id = s.ID,
+                Name = s.Name,
+                Distance = MathF.Round(s.TotalRuns, 2)
+            }));
+        }
+
+        [HttpGet("tabledata/classes/{walkguid}/{schoolId}")] 
+        public async Task<ActionResult<List<SchoolClassInfoModel>>> GetSchoolClassesData(string walkguid, int schoolId) {
+            Guid guid;
+            
+            if (!Guid.TryParse(walkguid, out guid))
+                return NotFound();
+            
+            var school = await context.wwwSchools
+                .Include(i => i.WwwWalk)
+                .Include(j => j.WwwClasses)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.WwwWalk.Guid == guid && f.ID == schoolId);
+            
+            if (school == null || !school.WwwClasses.Any())
+                return NotFound();
+            
+            return new List<SchoolClassInfoModel>(school.WwwClasses.Select(s => new SchoolClassInfoModel() {
+                Id = s.ID,
+                Name = s.Name,
+                Distance = MathF.Round(s.TotalRuns, 2)
+            }));
+        }
+
+        [HttpGet("tabledata/entities/{schoolId}/{classId}")] 
+        public async Task<ActionResult<List<EntityInfoModel>>> GetClassEntitiesData(int schoolId, int classId) {
+            
+            var schoolclass = await context.wwwClasses
+                .Include(i => i.WwwSchool)
+                .Include(j => j.WwwEntities)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.WwwSchool.ID == schoolId && f.ID == classId);
+            
+            if (schoolclass == null || !schoolclass.WwwEntities.Any())
+                return NotFound();
+            
+            return new List<EntityInfoModel>(schoolclass.WwwEntities.Select(s => new EntityInfoModel() {
+                Id = s.ID,
+                Name = s.Pseudonym,
+                Distance = MathF.Round(s.TotalRuns, 2)
+            }));
+        }       
+
+        [HttpGet("tabledata/runs/{classId}/{entityId}")] 
+        public async Task<ActionResult<List<EntityRunInfoModel>>> GetEntityRunsData(int classId, int entityId) {
+            
+            var entity = await context.wwwEntities
+                .Include(i => i.WwwClass)
+                .Include(j => j.WwwRuns)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.WwwClass.ID == classId && f.ID == entityId);
+            
+            if (entity == null || !entity.WwwRuns.Any())
+                return NotFound();
+            
+            return new List<EntityRunInfoModel>(entity.WwwRuns.Select(s => new EntityRunInfoModel() {
+                Time = s.Time,
+                Distance = MathF.Round(s.Distance, 2)
+            }));
+        }     
+
         [HttpGet("gettestdata")]
         public async Task<ActionResult<RunDebugModel>> GetRunTestData()
         {

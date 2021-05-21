@@ -66,3 +66,10 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function Scroll(id)
+{
+    var elmnt = document.getElementById(id);
+    if (elmnt != null) {
+        elmnt.scrollIntoView({ behavior: 'smooth' });
+    }
+};

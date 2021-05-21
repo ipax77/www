@@ -22,6 +22,7 @@
     @if (Feedback != null) {
         <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
     }    
+    <br />
     <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
     <RunFormComponent 
         Walk="Walk" 
@@ -30,6 +31,8 @@
         OnValidSubmit="HandleValidSubmit" 
         OnInvalidSubmit="HandleInvalidSubmit">
     </RunFormComponent>
+    <br />
+    <TableComponent walkGuid="@walkGuid"></TableComponent>
 }
 
 @code {
