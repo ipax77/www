@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace WorldWideWalk.Models
+﻿namespace WorldWideWalk.Models
 {
     public class WwwFeedback
     {

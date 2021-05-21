@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Globalization;
 using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
 
 namespace WorldWideWalk
 {

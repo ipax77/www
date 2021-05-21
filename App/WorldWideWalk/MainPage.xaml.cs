@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using WorldWideWalk.Models;
 using Xamarin.Essentials;
@@ -41,7 +39,8 @@ namespace WorldWideWalk
             try
             {
                 await Browser.OpenAsync(walkUri, BrowserLaunchMode.SystemPreferred);
-            } catch { }
+            }
+            catch { }
         }
 
         private async void Debug()
@@ -52,6 +51,8 @@ namespace WorldWideWalk
         private async void GetWalk()
         {
             Walk = await restService.GetWalk(walkGuid);
+            if (String.IsNullOrEmpty(Walk.Name))
+                OfflineLayout.IsVisible = true;
             SetCurrentText();
             // Debug();
             activityIndicator.IsRunning = false;
@@ -63,6 +64,7 @@ namespace WorldWideWalk
             SubmitLayout.IsVisible = false;
             MapLayout.IsVisible = false;
             FeedbackLayout.IsVisible = false;
+            OfflineLayout.IsVisible = false;
             grMap.Children.Clear();
             LbTime.Text = "";
             LbDistance.Text = "";
@@ -77,8 +79,10 @@ namespace WorldWideWalk
             locationManager.LocationUpdated += LocationManager_LocationUpdated;
         }
 
-        private void StopRun(object sender, EventArgs e)
+        private async void StopRun(object sender, EventArgs e)
         {
+            activityIndicator.IsVisible = true;
+            activityIndicator.IsRunning = true;
             BtnStart.IsEnabled = true;
             BtnStart.Clicked += StartRun;
             BtnStop.IsEnabled = false;
@@ -95,9 +99,9 @@ namespace WorldWideWalk
             }
             LbDistance.Text = "Zurückgelegt: " + Math.Round(Run.Distance, 2).ToString() + " m";
 
-            InitRunData();
-            SubmitLayout.IsVisible = true;
-            scrollView.ResolveLayoutChanges();
+            bool success = await InitRunData();
+            activityIndicator.IsVisible = false;
+            activityIndicator.IsRunning = false;
         }
 
         async void Submit_Clicked(object sender, EventArgs e)
@@ -118,8 +122,10 @@ namespace WorldWideWalk
                 WwwFeedback feedback = await restService.SubmitRun(RunData);
                 if (feedback == null)
                 {
-                    ValidationMessage = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
-                    LbValidation.Text = ValidationMessage;
+                    // ValidationMessage = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
+                    // LbValidation.Text = ValidationMessage;
+                    OfflineLayout.IsVisible = true;
+                    SubmitLayout.IsVisible = false;
                 }
                 else
                 {
@@ -148,6 +154,26 @@ namespace WorldWideWalk
             activityIndicator.IsVisible = false;
         }
 
+        private async void TryGoOnline(object sender, EventArgs e)
+        {
+            activityIndicator.IsRunning = true;
+            activityIndicator.IsVisible = true;
+            Walk = await restService.GetWalk(walkGuid);
+            SetCurrentText();
+            if (Run.StopTime != DateTime.MinValue)
+            {
+                if (await InitRunData())
+                {
+                    OfflineLayout.IsVisible = false;
+                }
+            }
+            else if (!String.IsNullOrEmpty(Walk.Name))
+                OfflineLayout.IsVisible = false;
+
+            activityIndicator.IsRunning = false;
+            activityIndicator.IsVisible = false;
+        }
+
         private void LocationManager_LocationUpdated(object sender, Models.LocationUpdatedEventArgs e)
         {
             if (Run.RunItems.Count == 0 && !String.IsNullOrEmpty(e.Error))
@@ -155,7 +181,8 @@ namespace WorldWideWalk
                 StopRun(null, null);
                 LbTime.Text = e.Error;
                 return;
-            } else
+            }
+            else
             {
                 Run.RunItems.Add(new RunItem()
                 {
@@ -165,10 +192,10 @@ namespace WorldWideWalk
                     TimeStamp = e.Timestamp,
                     Error = e.Error
                 });
-                
+
                 if (Run.RunItems.Count % 10 == 0)
                 {
-                    Run.SetRunInfo();
+                    var distance = Run.GetStepInfo();
                     if ((DateTime.UtcNow - Run.StartTime) > App.MaxRunTime)
                     {
                         StopRun(null, null);
@@ -176,14 +203,14 @@ namespace WorldWideWalk
                         return;
                     }
 
-                    if (Run.AverageSpeedInKmH > App.MaxSpeedInKmH)
-                    {
-                        StopRun(null, null);
-                        LbTime.Text = "Die maximal erlaubte Geschwindigkeit wurde überschritten.";
-                        return;
-                    }
+                    //if (Run.AverageSpeedInKmH > App.MaxSpeedInKmH)
+                    //{
+                    //    StopRun(null, null);
+                    //    LbTime.Text = "Die maximal erlaubte Geschwindigkeit wurde überschritten.";
+                    //    return;
+                    //}
                     LbTime.Text = $"Laufzeit: {(DateTime.UtcNow - Run.StartTime).ToString(@"hh\:mm\:ss")}";
-                    LbDistance.Text = "Zurückgelegt: " + Math.Round(Run.Distance, 2).ToString() + " m";
+                    LbDistance.Text = "Zurückgelegt: " + distance + " m";
                 }
             }
         }
@@ -196,7 +223,7 @@ namespace WorldWideWalk
                 ValidationMessage = "";
             else
                 ValidationMessage = String.Join(Environment.NewLine, validationMessages);
-            
+
             LbValidation.Text = ValidationMessage;
         }
 
@@ -237,20 +264,36 @@ namespace WorldWideWalk
             grMap.ResolveLayoutChanges();
         }
 
-        void InitRunData()
+        async Task<bool> InitRunData()
         {
+            if (String.IsNullOrEmpty(Walk.Name))
+            {
+                Walk = await restService.GetWalk(walkGuid);
+                if (String.IsNullOrEmpty(Walk.Name))
+                {
+                    OfflineLayout.IsVisible = true;
+                    return false;
+                }
+                OfflineLayout.IsVisible = false;
+                SetCurrentText();
+            }
             RunData = new EntityRunFormData()
             {
                 Walk = walkGuid,
                 School = Walk.Schools.First().Name,
-                Distance = (float)(Run.Distance / 1000),
+                // Distance = (float)(Run.Distance / 1000),
+                Distance = 2.2f,
                 Time = Run.StopTime
             };
             InitClassPicker();
+            SubmitLayout.IsVisible = true;
+            scrollView.ResolveLayoutChanges();
+            return true;
         }
 
         void InitClassPicker()
         {
+            var selected = RunData.SchoolClass;
             ClassPicker.Title = "Klasse";
             ClassPicker.Items.Clear();
             foreach (var ent in Walk.Schools.First(f => f.Name == RunData.School).SchoolClasses.Select(s => s.Name).OrderBy(o => o))
@@ -266,6 +309,13 @@ namespace WorldWideWalk
                 else
                 {
                     RunData.SchoolClass = ClassPicker.Items[ClassPicker.SelectedIndex];
+                }
+            };
+            if (!String.IsNullOrEmpty(selected))
+            {
+                if (ClassPicker.Items.Contains(selected))
+                {
+                    ClassPicker.SelectedIndex = ClassPicker.Items.IndexOf(selected);
                 }
             };
         }

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Text.Json.Serialization;
-using Xamarin.Forms;
 using Xamarin.Essentials;
+using Xamarin.Forms;
 
 namespace WorldWideWalk.Models
 {
@@ -29,6 +28,14 @@ namespace WorldWideWalk.Models
                 return "Maximale Höchstgeschwindigkeit überschritten.";
             Html = SetWebViewSource();
             return "";
+        }
+
+        public double GetStepInfo()
+        {
+            if (RunItems.Count < 6)
+                return 0;
+            var items = FilterData();
+            return Math.Round(items.Select(s => s.Distance).Sum(), 2);
         }
 
         private List<RunItem> FilterData()
@@ -101,6 +108,7 @@ namespace WorldWideWalk.Models
         private HtmlWebViewSource SetWebViewSource()
         {
             var mainline = GetMainLine();
+            var json = mainline.GetJsonString();
             return new HtmlWebViewSource
             {
                 Html = @"<html>
@@ -121,7 +129,7 @@ namespace WorldWideWalk.Models
                     }).addTo(map);
     " +
     " var polyline = L.polyline(" +
-        mainline.GetJsonString() +
+        json +
     ", { color: '" + mainline.Color + "' }).addTo(map);" +
     " map.fitBounds(polyline.getBounds());" +
     "}" +

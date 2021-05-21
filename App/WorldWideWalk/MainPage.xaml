@@ -29,6 +29,10 @@
                 <Label x:Name="LbTime"></Label>
                 <Label x:Name="LbDistance"></Label>
             </StackLayout>
+            <StackLayout x:Name="OfflineLayout" IsVisible="false">
+                <Label BackgroundColor="PaleVioletRed" Text="Verbinden um Deine Strecke zu übertragen. Für den Lauf musst Du nicht Online sein."></Label>
+                <Button Text="Verbinden" Clicked="TryGoOnline" />
+            </StackLayout>
             <StackLayout x:Name="SubmitLayout" IsVisible="false">
                 <Picker x:Name="ClassPicker"></Picker>
                 <Entry x:Name="PseudonymEntry" IsSpellCheckEnabled="false" IsTextPredictionEnabled="false" Placeholder="Pseudonym" />
@@ -39,7 +43,7 @@
                 <Label Text=""/>
             </StackLayout>
             <StackLayout x:Name="FeedbackLayout" IsVisible="false">
-                <Label Text="Vielen Dank! Damit hast Du folgende Ziele erreicht:"></Label>
+                <Label BackgroundColor="LightGreen" Text="Vielen Dank! Damit hast Du folgende Ziele erreicht:"></Label>
                 <Grid x:Name="FeedbackGrid">
                 </Grid>
             </StackLayout>

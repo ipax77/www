@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -35,7 +34,8 @@ namespace WorldWideWalk
                     string content = await response.Content.ReadAsStringAsync();
                     return JsonSerializer.Deserialize<List<WalkAppModel>>(content, jsonOptions);
                 }
-            } catch
+            }
+            catch
             {
 
             }
@@ -64,7 +64,10 @@ namespace WorldWideWalk
             {
                 Console.WriteLine(e.Message);
             }
-            return null;
+            return new WalkAppModel()
+            {
+                Name = String.Empty
+            };
         }
 
         public async Task<WwwFeedback> SubmitRun(EntityRunFormData data)
@@ -81,7 +84,8 @@ namespace WorldWideWalk
                 {
                     var resContent = await response.Content.ReadAsStringAsync();
                     feedback = JsonSerializer.Deserialize<WwwFeedback>(resContent, jsonOptions);
-                } else
+                }
+                else
                 {
                     return new WwwFeedback()
                     {
@@ -89,12 +93,8 @@ namespace WorldWideWalk
                     };
                 }
             }
-            catch (Exception e)
+            catch
             {
-                return new WwwFeedback()
-                {
-                    Error = $"Fehler beim übertragen der Daten. {e.Message}"
-                };
             }
             return feedback;
         }
