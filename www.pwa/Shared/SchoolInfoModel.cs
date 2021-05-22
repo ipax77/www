@@ -31,6 +31,7 @@ namespace www.pwa.Shared
 
     public class EntityRunInfoModel
     {
+        public int Id { get; set; }
         public float Distance { get; set; }
         public DateTime Time { get; set; }
     }

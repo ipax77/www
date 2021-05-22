@@ -153,6 +153,7 @@ namespace www.pwa.Server.Controllers
                 return NotFound();
             
             return new List<EntityRunInfoModel>(entity.WwwRuns.Select(s => new EntityRunInfoModel() {
+                Id = s.ID,
                 Time = s.Time,
                 Distance = MathF.Round(s.Distance, 2)
             }));

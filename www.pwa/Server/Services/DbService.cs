@@ -14,7 +14,7 @@ namespace www.pwa.Server.Services
     public class DbService
     {
         private readonly ILogger<DbService> logger;
-        public static readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        public readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         public DbService(ILogger<DbService> logger)
         {
             this.logger = logger;

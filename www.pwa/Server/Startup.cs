@@ -17,6 +17,8 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace www.pwa.Server
 {
@@ -43,10 +45,18 @@ namespace www.pwa.Server
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>(options =>
+                    {
+                        options.IdentityResources["openid"].UserClaims.Add("role");
+                        options.ApiResources.Single().UserClaims.Add("role");
+                    }
+                );
+            System.IdentityModel.Tokens.Jwt.JwtSecurityTokenHandler
+                .DefaultInboundClaimTypeMap.Remove("role");
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();
@@ -65,15 +75,15 @@ namespace www.pwa.Server
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            services.AddScoped<DbService>();
+            services.AddSingleton<DbService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, IServiceProvider serviceProvider)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-            
+            CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"]);
             context.Database.Migrate();
 
             if (!context.wwwWalks.Any()) {
@@ -254,6 +264,44 @@ namespace www.pwa.Server
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });
+        }
+
+        private void CreateRoles(IServiceProvider serviceProvider, string email, string securePassword)
+        {
+            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            Task<IdentityResult> roleResult;
+
+            foreach (var role in Enum.GetValues(typeof(Role)))
+            {
+                Task<bool> roleExists = roleManager.RoleExistsAsync(role.ToString());
+                roleExists.Wait();
+
+                if (!roleExists.Result)
+                {
+                    roleResult = roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                    roleResult.Wait();
+                }
+            }
+
+            Task<ApplicationUser> adminUser = userManager.FindByEmailAsync(email);
+            adminUser.Wait();
+
+            if (adminUser.Result == null)
+            {
+                var admin = new ApplicationUser();
+                admin.Email = email;
+                admin.UserName = email;
+
+                Task<IdentityResult> newUser = userManager.CreateAsync(admin, securePassword);
+                newUser.Wait();
+            }
+
+            var createdAdminUser = userManager.FindByEmailAsync(email);
+                createdAdminUser.Wait();
+            createdAdminUser.Result.EmailConfirmed = true; // confirm email so we can login
+            Task<IdentityResult> newUserRoleAssignment = userManager.AddToRoleAsync(createdAdminUser.Result, Role.Administrator.ToString());
+            newUserRoleAssignment.Wait();
         }
     }
 }

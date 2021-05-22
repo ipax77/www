@@ -17,6 +17,10 @@
     </div>
 </div>
 
+@if (isLoading) {
+    <LoadingComponent></LoadingComponent>
+}
+
 @if (Walk != null) {
     <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
     @if (Feedback != null) {
@@ -45,6 +49,7 @@
     string badgeInfo = "";
     string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
     MapComponent mapComponent;
+    bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -62,6 +67,8 @@
     {
         badgeClass = "d-none";
         badgeInfo = "";
+        isLoading = true;
+        await InvokeAsync(() => StateHasChanged());
 
         try {
             var response = await Http.PostAsJsonAsync<EntityRunFormData>("WwwRun", Run);
@@ -80,6 +87,8 @@
             badgeClass = "badge bg-warning";
             badgeInfo = $"Fehler beim übertragen der Daten. {e.Message}";
             Feedback = null;
+            isLoading = false;
+            await InvokeAsync(() => StateHasChanged());
             return;
         }
 
@@ -104,7 +113,8 @@
                 mapComponent.ShowCurrent(Feedback);
             }
         }
-        StateHasChanged();
+        isLoading = false;
+        await InvokeAsync(() => StateHasChanged());
     }
     private void HandleInvalidSubmit()
     {
