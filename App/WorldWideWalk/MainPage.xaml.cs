@@ -91,7 +91,14 @@ namespace WorldWideWalk
             locationManager.LocationUpdated -= LocationManager_LocationUpdated;
             Run.StopTime = DateTime.UtcNow;
 
-            Run.SetRunInfo();
+            var response = Run.SetRunInfo();
+            if (!String.IsNullOrEmpty(response))
+            {
+                LbTime.Text = response;
+                activityIndicator.IsVisible = false;
+                activityIndicator.IsRunning = false;
+                return;
+            }
 
             if (sender != null)
             {
@@ -282,7 +289,7 @@ namespace WorldWideWalk
                 Walk = walkGuid,
                 // School = Walk.Schools.First().Name,
                 Distance = (float)(Run.Distance / 1000),
-                Distance = 2.2f,
+                // Distance = 2.2f,
                 Time = Run.StopTime
             };
             InitClassPicker();
