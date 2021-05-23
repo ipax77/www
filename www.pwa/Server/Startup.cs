@@ -83,9 +83,11 @@ namespace www.pwa.Server
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
-            CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"]);
+            
             context.Database.Migrate();
-
+            
+            CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"]);
+            
             if (!context.wwwWalks.Any()) {
                 WwwWalk nepalWalk = new WwwWalk() {
                     Name = "Sponsorenlauf für Nepal",

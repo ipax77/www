@@ -166,6 +166,15 @@ namespace www.pwa.Server.Controllers
             return data;
         }
 
+        [HttpGet("chart/{guid}/{mode}")]
+        public async Task<ActionResult<WwwChartInfo>> GetChartData(string guid, string mode) {
+            var info = await dbService.GetChartData(context, guid, mode);
+            if (info == null)
+                return NotFound();
+            else
+                return info;
+        }
+
         [HttpPost]
         [RequestLimit("Submit", NoOfRequest = 5, Seconds = 10)]
         public async Task<ActionResult<WwwFeedback>> Submit(EntityRunFormData data) {
@@ -175,6 +184,5 @@ namespace www.pwa.Server.Controllers
             else
                 return feedback;
         }
-
     }
 }

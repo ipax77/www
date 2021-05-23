@@ -39,12 +39,22 @@ namespace www.pwa.Client.Shared
             return base.OnInitializedAsync();
         }
 
-        public void Reset() {
-            Schools = new List<SchoolInfoModel>();
+        public void Reset(float CurrentDistance = 0)
+        {
+
             schoolClasses = new List<SchoolClassInfoModel>();
             entities = new List<EntityInfoModel>();
             entityRuns = new List<EntityRunFormData>();
-            GetSchools(walkGuid);
+            if (CurrentDistance > 0)
+            {
+                Schools.First().Distance = CurrentDistance;
+                StateHasChanged();
+            }
+            else
+            {
+                Schools = new List<SchoolInfoModel>();
+                GetSchools(walkGuid);
+            }
         }
 
         private async Task GetSchools(string walkguid)
@@ -163,33 +173,45 @@ namespace www.pwa.Client.Shared
             await _js.InvokeVoidAsync("Scroll", $"ent_{entityId}");
         }
 
-        private async Task Delete(SchoolClassInfoModel schoolClass) {
+        private async Task Delete(SchoolClassInfoModel schoolClass)
+        {
             HttpClient http = httpClient.CreateClient("www.pwa.ServerAPI");
-            try {
+            try
+            {
                 var response = await http.GetAsync($"WwwRunAdmin/class/{schoolClass.Id}");
-                if (response.IsSuccessStatusCode) {
+                if (response.IsSuccessStatusCode)
+                {
                     Reset();
                 }
-            } catch {}
+            }
+            catch { }
         }
-        private async Task Delete(EntityInfoModel entity) {
+        private async Task Delete(EntityInfoModel entity)
+        {
             HttpClient http = httpClient.CreateClient("www.pwa.ServerAPI");
-            try {
+            try
+            {
                 var response = await http.GetAsync($"WwwRunAdmin/entity/{entity.Id}");
-                if (response.IsSuccessStatusCode) {
+                if (response.IsSuccessStatusCode)
+                {
                     Reset();
                 }
-            } catch {}
+            }
+            catch { }
         }
 
-        private async Task Delete(EntityRunInfoModel run) {
+        private async Task Delete(EntityRunInfoModel run)
+        {
             HttpClient http = httpClient.CreateClient("www.pwa.ServerAPI");
-            try {
+            try
+            {
                 var response = await http.GetAsync($"WwwRunAdmin/run/{run.Id}");
-                if (response.IsSuccessStatusCode) {
+                if (response.IsSuccessStatusCode)
+                {
                     Reset();
                 }
-            } catch {}
+            }
+            catch { }
         }
 
     }

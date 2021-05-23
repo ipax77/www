@@ -1,0 +1,171 @@
+@page "/charts"
+@using ChartJs.Blazor.BarChart.Axes
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+@using pwa.Shared
+@inject IHttpClientFactory httpClient
+@inject IJSRuntime _js
+
+@if (isLoading) {
+    <LoadingComponent></LoadingComponent>
+}
+<div class="btn-block mb-2">
+    <button type="button" class="btn btn-secondary" @onclick="@( async() => ChangeMode("Years"))">Jahrgänge</button>
+    <button type="button" class="btn btn-secondary" @onclick="@( async() => ChangeMode("Classes"))">Klassen</button>
+</div>
+@if (_config != null && Reset == false) {
+    
+    <Chart @ref="_chart" Config="_config" Width="@width" Height="@minheight"></Chart>
+    
+}
+
+<div id="wsize" class="w-100"></div>
+
+@code {
+    [Parameter]
+    public string walkGuid { get; set; } = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
+    private BarConfig _config;
+    Chart _chart;
+    WwwChartInfo info;
+    private HttpClient Http;
+    bool isLoading = false;
+    bool Reset = false;
+    int width = 540;
+    int minheight = 400;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
+        SetChart();
+        await ChangeMode("Years");
+    }
+
+    public async Task ChangeMode(string mode) {
+        isLoading = true;
+        await InvokeAsync(() => StateHasChanged());
+        try {
+            info = await Http.GetFromJsonAsync<WwwChartInfo>($"WwwRun/chart/{walkGuid}/{mode}");
+        } catch {}
+        await SetMode(info, mode);
+        isLoading = false;
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    public async Task SetWidth() {
+        width = await _js.InvokeAsync<int>("GetWidth", "wsize");
+        // width = (int)(width * 0.8);
+        if (width > 900)
+            width = 900;
+        // else if (width < 400)
+        //    width = 400;
+    }
+
+    void SetChart() {
+            _config = new BarConfig(horizontal: true)
+            {
+                Options = new BarOptions()
+                {
+                    Responsive = false,
+                    Title = new OptionsTitle
+                    {
+                        Display = true,
+                        Padding = 5,
+                        FontSize = 20,
+                        Text = "Loading ...",
+                        FontColor = "#f2f2f2"
+                    },
+                    Scales = new BarScales()
+                    {
+                        YAxes = new List<CartesianAxis>()
+                        {
+                            new BarCategoryAxis
+                            {
+                                GridLines = new GridLines()
+                                {
+                                    Color = "#404040",
+                                    BorderDash = new double[] {3, 11}
+                                },
+                                Ticks = new CategoryTicks()
+                                {
+                                    FontColor = "#c9bd14"
+                                },
+                                ScaleLabel = new ScaleLabel()
+                                {
+                                    LabelString = "Jahrgänge"
+                                }
+                                // BarThickness = BarThickness.Absolute(50.0),
+                                // Offset = false
+                            }
+                        },
+                        XAxes = new List<CartesianAxis>
+                        {
+
+                            new LinearCartesianAxis
+                            {
+                                GridLines = new GridLines()
+                                {
+                                    Color = "#404040",
+                                    BorderDash = new double[] {3, 11}
+                                },
+                                Ticks = new LinearCartesianTicks()
+                                {
+                                    BeginAtZero = true,
+                                    FontColor = "#c9bd14"
+                                },
+                                ScaleLabel = new ScaleLabel()
+                                {
+                                    Display = true,
+                                    LabelString = "km"
+                                },
+                            }
+                        }
+                    }
+                }
+            };
+    }
+
+    async Task SetMode(WwwChartInfo info, string mode) {
+        await InvokeAsync(() => StateHasChanged());
+        Reset = true;
+        _chart = null;
+        _config = null;
+        await InvokeAsync(() => StateHasChanged());
+        await SetWidth();
+        await Task.Delay(25);
+        SetChart();
+        Reset = false;
+        await InvokeAsync(() => StateHasChanged());
+
+        if (info == null)
+        {
+            _config.Options.Title.Text = "Keine Daten verfügbar.";
+            _config.Options.Scales.XAxes.First().ScaleLabel.LabelString = "no data";
+            await _chart.Update();
+            return;
+        }
+
+        string Title = mode switch
+        {
+            "Years" => "Jahrgänge",
+            "Classes" => "Klassen",
+            _ => "Loading ..."
+        };
+
+        _config.Options.Title.Text = Title;
+        foreach (var label in info.Lables)
+            _config.Data.Labels.Add(label);
+
+        BarDataset<double> dataset = new BarDataset<double>(info.Data, horizontal: true)
+        {
+            BackgroundColor = Enumerable.Repeat("rgba(87, 66, 245, 0.8)", info.Data.Count).ToArray(),
+            Label = "",
+            BorderWidth = 1,
+            BorderColor = "rgba(255, 0, 0, 1)",
+        };
+
+        _config.Data.Datasets.Add(dataset);
+        await _chart.Update();
+    }
+}

@@ -73,3 +73,12 @@ function Scroll(id)
         elmnt.scrollIntoView({ behavior: 'smooth' });
     }
 };
+
+  function GetWidth(id) {
+      var elmnt = document.getElementById(id);
+      if (elmnt != null) {
+          return elmnt.clientWidth;
+      } else {
+          return 0;
+      }
+  }

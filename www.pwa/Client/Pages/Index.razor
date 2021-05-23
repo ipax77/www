@@ -5,6 +5,7 @@
 @using Microsoft.Extensions.Logging
 @inject IHttpClientFactory httpClient
 @inject ILogger<Index> logger
+@inject IJSRuntime _js
 
 <div class="d-flex flex-row">
     <div class="flex-shrink-1 p-2">
@@ -36,7 +37,7 @@
         OnInvalidSubmit="HandleInvalidSubmit">
     </RunFormComponent>
     <br />
-    <TableComponent walkGuid="@walkGuid"></TableComponent>
+    <TableComponent @ref="tableComponent" walkGuid="@walkGuid"></TableComponent>
 }
 
 @code {
@@ -49,6 +50,7 @@
     string badgeInfo = "";
     string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
     MapComponent mapComponent;
+    TableComponent tableComponent;
     bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
@@ -111,6 +113,8 @@
                 Run.Credential = String.Empty;
                 Walk.CurrentDistance = Feedback.CurrentDistance;
                 mapComponent.ShowCurrent(Feedback);
+                tableComponent.Reset(Feedback.CurrentDistance);
+                await _js.InvokeVoidAsync("Scroll", "mapid");
             }
         }
         isLoading = false;

@@ -366,11 +366,16 @@ namespace www.pwa.Server.Services
             await context.SaveChangesAsync();
         }
 
-        public async Task<WwwChartInfo> GetChartData(ApplicationDbContext context, string mode)
+        public async Task<WwwChartInfo> GetChartData(ApplicationDbContext context, string walkGuid, string mode)
         {
             List<KeyValuePair<string, double>> data = new List<KeyValuePair<string, double>>();
             IOrderedEnumerable<KeyValuePair<string, double>> result = null;
-            var walk = await context.wwwWalks.FirstAsync(f => f.isActive);
+            Guid guid;
+            if (!Guid.TryParse(walkGuid, out guid))
+                return null;
+            var walk = await context.wwwWalks.FirstAsync(f => f.Guid == guid);
+            if (walk == null)
+                return null;
             var school = await context.wwwSchools.FirstAsync(f => f.WwwWalk == walk);
             if (mode == "Years")
             {
@@ -388,11 +393,11 @@ namespace www.pwa.Server.Services
                                 select r.Distance;
                     float sum = await dists.SumAsync(s => s);
                     if (sum > 0)
-                        data.Add(new KeyValuePair<string, double>(year.ToString(), Math.Round((double)sum, 2)));
+                        data.Add(new KeyValuePair<string, double>(year == 0 ? "Lehrer" : year.ToString(), Math.Round((double)sum, 2)));
                 }
                 result = data.OrderByDescending(o => o.Value);
             }
-            if (mode == "Classes")
+            else if (mode == "Classes")
             {
                 var classes = await context.wwwClasses.AsNoTracking().Select(s => s.Name).Distinct().ToListAsync();
                 foreach (var wwwClass in classes)
@@ -413,7 +418,7 @@ namespace www.pwa.Server.Services
                 }
                 result = data.OrderByDescending(o => o.Value);
             }
-            if (mode == "Schools")
+            else if (mode == "Schools")
             {
                 var schools = await context.wwwSchools.AsNoTracking().Select(s => s.Name).Distinct().ToListAsync();
                 foreach (var myschool in schools)
@@ -431,7 +436,8 @@ namespace www.pwa.Server.Services
                         data.Add(new KeyValuePair<string, double>(myschool, Math.Round((double)sum, 2)));
                 }
                 result = data.OrderByDescending(o => o.Value);
-            }
+            } else
+                return null;
             WwwChartInfo info = new WwwChartInfo()
             {
                 Lables = result.Select(s => s.Key).ToList(),

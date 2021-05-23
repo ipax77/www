@@ -11,7 +11,7 @@ namespace www.pwa.Shared
         public static string DefaultWalk = "";
         public static string DefaultCredential = "";
         public static string[] s_classes = new string[] {
-            "0(Lehrer)",
+            "Lehrer",
             "5a", "5b", "5c", "5d", "5e",
             "6a", "6b", "6c", "6d", "6e", "6f",
             "7a", "7b", "7c", "7d", "7e",
