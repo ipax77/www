@@ -287,7 +287,7 @@ namespace WorldWideWalk
             RunData = new EntityRunFormData()
             {
                 Walk = walkGuid,
-                // School = Walk.Schools.First().Name,
+                School = Walk.Schools.First().Name,
                 Distance = (float)(Run.Distance / 1000),
                 // Distance = 2.2f,
                 Time = Run.StopTime
