@@ -23,6 +23,7 @@
 }
 
 @if (Walk != null) {
+    <h3>Gesammelte Sponsorengelder: @SponsorMoney</h3>
     <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
     @if (Feedback != null) {
         <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
@@ -52,7 +53,7 @@
     MapComponent mapComponent;
     TableComponent tableComponent;
     bool isLoading = false;
-
+    double SponsorMoney = 0;
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
@@ -63,6 +64,7 @@
              new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
         Run.Walk = walkGuid;
         Run.School = Walk.Schools.First().Name;
+        SponsorMoney = await Http.GetFromJsonAsync<double>($"WwwSponsor/{walkGuid}");
     }
 
     private async Task HandleValidSubmit()

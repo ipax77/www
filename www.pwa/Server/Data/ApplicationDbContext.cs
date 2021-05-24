@@ -25,6 +25,8 @@ namespace www.pwa.Server.Data
         public DbSet<WwwRun> wwwRuns { get; set; }
         public DbSet<WwwCounter> wwwCounters { get; set; }
         public DbSet<WwwCounterQueue> counterQueues { get; set; }
+        public DbSet<EntitySponsor> entitySponsors { get; set; }
+        public DbSet<WalkSponsor> walkSponsors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

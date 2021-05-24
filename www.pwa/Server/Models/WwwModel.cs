@@ -23,6 +23,7 @@ namespace www.pwa.Server.Models
         public string Credential { get; set; }
         public virtual ICollection<WwwSchool> WwwSchools { get; set; }
         public virtual ICollection<WwwWalkData> Points { get; set; }
+        public virtual ICollection<WalkSponsor> Sponsors { get; set; }
     }
 
     public class WwwSchool
@@ -54,6 +55,7 @@ namespace www.pwa.Server.Models
         public int Runs { get; set; } = 0;
         public virtual WwwClass WwwClass { get; set; }
         public virtual ICollection<WwwRun> WwwRuns { get; set; }
+        public virtual ICollection<EntitySponsor> Sponsors { get; set; }
     }
 
     public class WwwRun
@@ -62,6 +64,24 @@ namespace www.pwa.Server.Models
         public DateTime Time { get; set; }
         public float Distance { get; set; }
         public virtual WwwEntity WwwEntity { get; set; }
+    }
+
+    public class WwwSponsor
+    {
+        public int ID { get; set; }
+        public string Name { get; set; }
+        public double CentPerKm { get; set; }
+        public bool Verified { get; set; }
+    }
+
+    public class EntitySponsor : WwwSponsor
+    {
+        public WwwEntity Entity { get; set; }
+    }
+
+    public class WalkSponsor : WwwSponsor
+    {
+        public WwwWalk Walk { get; set; }
     }
 
     public class WwwCounter

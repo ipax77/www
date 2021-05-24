@@ -25,13 +25,17 @@ namespace www.pwa.Shared
             WalkPoints NextPoint = null;
             WalkPoints LastPoint = null;
             WalkPoints CurrentPoint = null;
+            var currentDistance = CurrentDistance;
+            if (CurrentDistance > Points.Last().Distance)
+                currentDistance = Points.Last().Distance - 1;
+                
             foreach (var point in Points)
             {
-                if (point.Distance > CurrentDistance)
+                if (point.Distance > currentDistance)
                 {
                     NextPoint = point;
                     NextTarget = NextPoint.Name;
-                    addDistance = CurrentDistance - point.Distance;
+                    addDistance = currentDistance - point.Distance;
                     break;
                 }
                 LastPoint = point;
@@ -48,7 +52,7 @@ namespace www.pwa.Shared
                     Name = "Current",
                     Latitude = x,
                     Longitude = y,
-                    Distance = CurrentDistance
+                    Distance = currentDistance
                 };
             }
             return (NextPoint, CurrentPoint);

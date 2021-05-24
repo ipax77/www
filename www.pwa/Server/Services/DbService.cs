@@ -446,6 +446,51 @@ namespace www.pwa.Server.Services
             return info;
         }
 
+        public async void SeedSponsors(ApplicationDbContext context) {
+            Random random = new Random();
+            WwwWalk walk = context.wwwWalks.First();
+            WwwSchool school = context.wwwSchools.Include(i => i.WwwClasses).First();
+            for (int i = 0; i < 1000; i++) {
+                string schoolClass = WwwData.s_classes[random.Next(0, WwwData.s_classes.Length - 1)];
+                string name = random.Next(0, 1000).ToString() + RandomString(random.Next(3, 10), random);
+
+                for (int j = 1; j < random.Next(3, 10); j++) {
+                    EntityRunFormData data = new EntityRunFormData() {
+                        Walk = walk.Guid.ToString(),
+                        School = school.Name,
+                        SchoolClass = schoolClass,
+                        Identifier = name,
+                        Distance = (float)(random.NextDouble() * 20 + 0.1),
+                        Time = DateTime.Today,
+                        Credential = "test123"
+                    };
+                    var feedback = await Submit(context, data);
+                    if (feedback != null && !String.IsNullOrEmpty(feedback.Error)) {
+                        logger.LogWarning(feedback.Error);
+                        return;
+                    }
+                }
+            }
+            foreach (var ent in context.wwwEntities.Include(i => i.Sponsors)) {
+                for (int i = 0; i < random.Next(2, 4); i++) {
+                    EntitySponsor sp = new EntitySponsor() {
+                        Name = RandomString(5, random),
+                        CentPerKm = random.Next(1, 101),
+                        Verified = true
+                    };
+                    ent.Sponsors.Add(sp);
+                }
+                context.SaveChanges();
+            }
+        }
+
+        public static string RandomString(int length, Random random)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            return new string(Enumerable.Repeat(chars, length)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         public async Task<(float, float, float)> GetDistance(ApplicationDbContext context)
         {
             var walk = await context.wwwWalks.FirstAsync(f => f.isActive);

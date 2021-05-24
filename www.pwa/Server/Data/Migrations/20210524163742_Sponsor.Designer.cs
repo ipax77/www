@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using www.pwa.Server.Data;
 
 namespace www.pwa.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210524163742_Sponsor")]
+    partial class Sponsor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -330,14 +332,11 @@ namespace www.pwa.Server.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("Verified")
-                        .HasColumnType("INTEGER");
-
                     b.HasKey("ID");
 
                     b.HasIndex("EntityID");
 
-                    b.ToTable("entitySponsors");
+                    b.ToTable("EntitySponsor");
                 });
 
             modelBuilder.Entity("www.pwa.Server.Models.WalkSponsor", b =>
@@ -352,9 +351,6 @@ namespace www.pwa.Server.Data.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("Verified")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int?>("WalkID")
                         .HasColumnType("INTEGER");
 
@@ -362,7 +358,7 @@ namespace www.pwa.Server.Data.Migrations
 
                     b.HasIndex("WalkID");
 
-                    b.ToTable("walkSponsors");
+                    b.ToTable("WalkSponsor");
                 });
 
             modelBuilder.Entity("www.pwa.Server.Models.WwwClass", b =>

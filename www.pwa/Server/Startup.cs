@@ -79,13 +79,14 @@ namespace www.pwa.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, IServiceProvider serviceProvider, DbService dbService)
         {
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
             
             context.Database.Migrate();
-            
+            // dbService.SeedSponsors(context);
+
             CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"]);
             
             if (!context.wwwWalks.Any()) {

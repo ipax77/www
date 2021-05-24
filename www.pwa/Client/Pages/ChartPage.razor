@@ -53,13 +53,14 @@
         await InvokeAsync(() => StateHasChanged());
     }
 
-    public async Task SetWidth() {
+    public async Task SetWidth(int count) {
         width = await _js.InvokeAsync<int>("GetWidth", "wsize");
         // width = (int)(width * 0.8);
         if (width > 900)
             width = 900;
         // else if (width < 400)
         //    width = 400;
+        minheight = count * 40;
     }
 
     void SetChart() {
@@ -132,7 +133,7 @@
         _chart = null;
         _config = null;
         await InvokeAsync(() => StateHasChanged());
-        await SetWidth();
+        await SetWidth(info.Data.Count);
         await Task.Delay(25);
         SetChart();
         Reset = false;
