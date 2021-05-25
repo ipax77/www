@@ -1,0 +1,231 @@
+@using System.Threading
+@using System.Reflection
+@using pwa.Shared
+@inject HttpClient Http
+@inject IHttpClientFactory httpClient
+@inject IJSRuntime _js
+@implements IDisposable
+
+<h3>Sponsoren Liste</h3>
+@if (isLoading) {
+    <LoadingComponent></LoadingComponent>
+} else {
+    <div>
+        <EditForm EditContext="editContext">
+            <div class="form-group form-group row justify-content-start mb-1">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newschoolclass">
+                    Klasse:
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputSelect id="newschoolclass" class="form-control" @bind-Value="@sponsorRequest.Klasse">
+                        <option value="">Alle</option>
+                        @foreach (string schoolclass in walk.Schools.First().SchoolClasses.Select(s => s.Name))
+                        {
+                            <option value="@schoolclass">@schoolclass</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>    
+            <div class="form-group row justify-content-start">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpwd">
+                    Suche
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputText id="newpwd" type="text" autocorrect="off" autocapitalize="off" class="form-control" @oninput="handleSearchChange" @bind-Value="@sponsorRequest.Search" />
+                </div>
+            </div>  
+            <div>
+                <TriStateCheckboxComponent Title="Verified" onStateSet="isVerifiedChange"></TriStateCheckboxComponent>
+            </div>
+        </EditForm>
+        <div class="ml-auto p-2">
+            <span class="badge badge-light"># @sponsorCount</span>
+        </div>
+    </div>
+    <div class="tableFixHead">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Freigeben</th>
+                    @foreach (var prop in typeof(SponsorListModel).GetProperties()) {
+                        <th nowrap @onclick="e => SortEnt(prop.Name)" style="cursor: pointer; text-decoration: underline;">
+                            @(new MarkupString(HtmlHelpers.GetTitleMarkdown(prop, sponsorRequest.Interest, sponsorRequest.Order)))
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <Virtualize @ref="virtualTable" Context="ent" ItemsProvider="LoadEnt" ItemSize="40" OverscanCount="10">
+                    <ItemContent>
+                        <tr>
+                            <td nowrap>
+                                <div class="btn-block">
+                                    @if (ent.Verified) {
+                                        <button type="button" class="btn btn-sm btn-warning" @onclick="e => UnVerify(ent.ID)">UnVerify</button>
+                                    } else {
+                                        <button type="button" class="btn btn-sm btn-success" @onclick="e => Verify(ent.ID)">Verify</button>
+                                    }
+                                    <button type="button" class="btn btn-sm btn-danger" @onclick="e => Delete(ent.ID)">Löschen</button>
+                                </div>
+                            </td>
+                            @foreach (var prop in ent.GetType().GetProperties()) {
+                                @if (prop.PropertyType.Name == "DateTime") {
+                                    <td nowrap>
+                                        @(((DateTime)ent.GetType().GetProperty(prop.Name).GetValue(ent, null)).ToShortDateString())
+                                    </td>
+                                } else {
+                                    <td nowrap>
+                                        @ent.GetType().GetProperty(prop.Name).GetValue(ent, null)
+                                    </td>
+                                }
+                            }
+                        </tr>
+                    </ItemContent>
+                    <Placeholder>
+                        <tr><td style="height: 40px;">Loading ...</td></tr>
+                    </Placeholder>            
+                </Virtualize>
+            </tbody>
+        </table>
+    </div>
+}
+@code {
+
+    SponsorRequest sponsorRequest;
+    IEnumerable<SponsorListModel> Sponsors;
+    int sponsorCount = 0;
+
+    EditContext editContext;
+    Virtualize<SponsorListModel> virtualTable;
+    bool isLoading = true;
+    WalkAppModel walk;
+    string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var HttpNoAuth = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
+        walk = await HttpNoAuth.GetFromJsonAsync<WalkAppModel>($"WwwRun/walk/{walkGuid}");
+        sponsorRequest = new SponsorRequest() {
+            Take = 100
+        };
+        editContext = new EditContext(sponsorRequest);
+        editContext.OnFieldChanged += handleFieldChange;
+        isLoading = false;
+    }
+
+    private async void handleFieldChange(object sender, FieldChangedEventArgs e) {
+        await Reload();
+    }
+    private async void handleSearchChange(ChangeEventArgs e)
+    {
+        sponsorRequest.Search = e.Value.ToString();
+        await Reload();
+    } 
+
+    private async void isVerifiedChange(int i)
+    {
+        sponsorRequest.isVerified = i;
+        await Reload();
+    }    
+
+    private async void SortEnt(string Name)
+    {
+        if (sponsorRequest.Interest == Name)
+            sponsorRequest.Order = !sponsorRequest.Order;
+        else
+        {
+            sponsorRequest.Interest = Name;
+            sponsorRequest.Order = true;
+        }
+        await virtualTable.RefreshDataAsync();
+        StateHasChanged();
+    }       
+
+    public async Task Reload() {
+        sponsorCount = await GetCount();
+        
+        await virtualTable.RefreshDataAsync();
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async Task<int> GetCount()
+    {
+        var response = await Http.PostAsJsonAsync<SponsorRequest>("WwwSponsorAdmin/count", sponsorRequest);
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<int>();
+        }
+        else
+            return 0;
+    }
+
+    private async ValueTask<ItemsProviderResult<SponsorListModel>> LoadEnt(
+        ItemsProviderRequest request)
+    {
+        sponsorRequest.Skip = request.StartIndex;
+        sponsorRequest.Take = Math.Min(request.Count, sponsorCount - request.StartIndex);
+
+        if (sponsorRequest.Take == 0)
+            Sponsors = new List<SponsorListModel>();
+        else
+            if (!request.CancellationToken.IsCancellationRequested)
+            Sponsors = await GetSponsors(request.CancellationToken);
+        return new ItemsProviderResult<SponsorListModel>(Sponsors, sponsorCount);
+    }
+
+    private async Task<IEnumerable<SponsorListModel>> GetSponsors(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                var response = await Http.PostAsJsonAsync<SponsorRequest>("WwwSponsorAdmin/get", sponsorRequest, cancellationToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<IEnumerable<SponsorListModel>>();
+                }
+                else
+                    return new List<SponsorListModel>();
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+        return new List<SponsorListModel>();
+    }
+
+    async void Verify(int id) {
+        var result = await Http.GetAsync($"WwwSponsorAdmin/verify/{id}");
+        if (result.IsSuccessStatusCode) {
+            var sponsor = Sponsors.FirstOrDefault(f => f.ID == id);
+            if (sponsor != null)
+                sponsor.Verified = true;
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+
+    async void UnVerify(int id) {
+        var result = await Http.GetAsync($"WwwSponsorAdmin/unverify/{id}");
+        if (result.IsSuccessStatusCode) {
+            var sponsor = Sponsors.FirstOrDefault(f => f.ID == id);
+            if (sponsor != null)
+                sponsor.Verified = false;
+            await InvokeAsync(() => StateHasChanged());
+        }
+    }
+    async void Delete(int id) {
+        if (await _js.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the sponsor '{id}'?")) {
+            var result = await Http.GetAsync($"WwwSponsorAdmin/delete/{id}");
+            if (result.IsSuccessStatusCode) {
+                await Reload();
+            }
+        }
+    }
+
+    public void Dispose() {
+        editContext.OnFieldChanged -= handleFieldChange;
+    }
+}
+
+        

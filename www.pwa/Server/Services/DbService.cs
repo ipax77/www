@@ -450,7 +450,7 @@ namespace www.pwa.Server.Services
             Random random = new Random();
             WwwWalk walk = context.wwwWalks.First();
             WwwSchool school = context.wwwSchools.Include(i => i.WwwClasses).First();
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 100; i++) {
                 string schoolClass = WwwData.s_classes[random.Next(0, WwwData.s_classes.Length - 1)];
                 string name = random.Next(0, 1000).ToString() + RandomString(random.Next(3, 10), random);
 

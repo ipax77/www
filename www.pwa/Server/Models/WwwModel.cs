@@ -72,6 +72,8 @@ namespace www.pwa.Server.Models
         public string Name { get; set; }
         public double CentPerKm { get; set; }
         public bool Verified { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Modified { get; set; }
     }
 
     public class EntitySponsor : WwwSponsor

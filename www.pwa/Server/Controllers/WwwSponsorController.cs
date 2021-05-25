@@ -98,7 +98,9 @@ namespace www.pwa.Server.Controllers
                         Name = sponsor.Sponsor,
                         CentPerKm = sponsor.CentPerKm,
                         Verified = false,
-                        Entity = entity
+                        Entity = entity,
+                        Created = DateTime.UtcNow,
+                        Modified = DateTime.UtcNow
                     };
                     context.entitySponsors.Add(entSponsor);
                 } else {
