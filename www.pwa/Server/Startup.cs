@@ -87,7 +87,7 @@ namespace www.pwa.Server
             context.Database.Migrate();
             // dbService.SeedSponsors(context);
 
-            CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"]);
+            CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"], Configuration["Auth:Admin2"], Configuration["Auth:Credential2"]);
             
             if (!context.wwwWalks.Any()) {
                 WwwWalk nepalWalk = new WwwWalk() {
@@ -269,7 +269,7 @@ namespace www.pwa.Server
             });
         }
 
-        private void CreateRoles(IServiceProvider serviceProvider, string email, string securePassword)
+        private void CreateRoles(IServiceProvider serviceProvider, string email, string securePassword, string email2, string securePassword2)
         {
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
@@ -287,6 +287,12 @@ namespace www.pwa.Server
                 }
             }
 
+            CreateUser(userManager, email, securePassword);
+            CreateUser(userManager, email2, securePassword2);
+            
+        }
+
+        private void CreateUser(UserManager<ApplicationUser> userManager, string email, string securePassword) {
             Task<ApplicationUser> adminUser = userManager.FindByEmailAsync(email);
             adminUser.Wait();
 
@@ -304,7 +310,7 @@ namespace www.pwa.Server
                 createdAdminUser.Wait();
             createdAdminUser.Result.EmailConfirmed = true; // confirm email so we can login
             Task<IdentityResult> newUserRoleAssignment = userManager.AddToRoleAsync(createdAdminUser.Result, Role.Administrator.ToString());
-            newUserRoleAssignment.Wait();
+            newUserRoleAssignment.Wait();            
         }
     }
 }
