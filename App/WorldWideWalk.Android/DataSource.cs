@@ -32,12 +32,10 @@ namespace WorldWideWalk.Droid
             NotificationHelper helper = new NotificationHelper();
             var notif = helper.ReturnNotif();
             StartForeground(ServiceRunningNotifID, notif);
-
             Log.Debug(TAG, "Start");
             geoService = new GeoService();
             // geoService.StartRun().GetAwaiter().GetResult();
             geoService.StartRun();
-
             return StartCommandResult.Sticky;
         }
 
