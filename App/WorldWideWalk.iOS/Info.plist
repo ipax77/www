@@ -39,15 +39,15 @@
 		<string>location</string>
 	</array>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Es wird nur die gelaufene Distanz übertragen. Positions-Daten sind nur lokal verfügbar.</string>
+    <string>Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es wird nur die gelaufene Distanz übertragen. Es werden keine Positions-Daten übermittelt, nur die gesammte Distanz der Strecke.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Es wird nur die gelaufene Distanz übertragen. Positions-Daten sind nur lokal verfügbar.</string>
+    <string>Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es wird nur die gelaufene Distanz übertragen. Es werden keine Positions-Daten übermittelt, nur die gesammte Distanz der Strecke.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Es wird nur die gelaufene Distanz übertragen. Positions-Daten sind nur lokal verfügbar.</string>
+    <string>Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es wird nur die gelaufene Distanz übertragen. Es werden keine Positions-Daten übermittelt, nur die gesammte Distanz der Strecke.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Es wird nur die gelaufene Distanz übertragen. Positions-Daten sind nur lokal verfügbar.</string>
+    <string>Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es wird nur die gelaufene Distanz übertragen. Es werden keine Positions-Daten übermittelt, nur die gesammte Distanz der Strecke.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Es wird nur die gelaufene Distanz übertragen. Positions-Daten sind nur lokal verfügbar.</string>
+    <string>Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es wird nur die gelaufene Distanz übertragen. Es werden keine Positions-Daten übermittelt, nur die gesammte Distanz der Strecke.</string>
 
 </dict>
 </plist>

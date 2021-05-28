@@ -59,8 +59,23 @@ namespace WorldWideWalk
             activityIndicator.IsVisible = false;
         }
 
-        private void StartRun(object sender, EventArgs e)
+        private async void StartRun(object sender, EventArgs e)
         {
+            var locationStatusAlways = await Permissions.CheckStatusAsync<Permissions.LocationAlways>();
+            var locationStatusWhenInUse = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
+
+            if (locationStatusAlways == PermissionStatus.Granted || locationStatusWhenInUse == PermissionStatus.Granted)
+            {
+                bool confirmed = await DisplayAlert("Positions-Daten", "Während des Laufs werden im Hintergrund Positions-Daten aufgezeichnet um die gesamte Distanz der Strecke zu ermitteln. Es werden keine Positions-Daten übermittelt oder gespeichert.", "OK", "Ablehnen");
+                if (!confirmed)
+                    return;
+            } else
+            {
+                bool confirmed = await DisplayAlert("Positions-Daten", "Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es werden keine Positions-Daten übermittelt oder gespeichert, nur die gesamte Distanz der Strecke.", "OK", "Ablehnen");
+                if (!confirmed)
+                    return;
+            }
+
             SubmitLayout.IsVisible = false;
             MapLayout.IsVisible = false;
             FeedbackLayout.IsVisible = false;
@@ -75,8 +90,8 @@ namespace WorldWideWalk
             Run = new Run();
             Run.StartTime = DateTime.UtcNow;
             locationManager = DependencyService.Get<ILocationManager>();
-            locationManager.StartLocationUpdates();
             locationManager.LocationUpdated += LocationManager_LocationUpdated;
+            locationManager.StartLocationUpdates();
         }
 
         private async void StopRun(object sender, EventArgs e)
@@ -160,6 +175,7 @@ namespace WorldWideWalk
             activityIndicator.IsRunning = false;
             activityIndicator.IsVisible = false;
         }
+
 
         private async void TryGoOnline(object sender, EventArgs e)
         {

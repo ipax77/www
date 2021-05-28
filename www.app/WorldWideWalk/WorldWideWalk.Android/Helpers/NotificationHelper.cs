@@ -2,10 +2,10 @@
 using Android.Content;
 using Android.OS;
 using AndroidX.Core.App;
-using WorldWideWalk.Droid;
+using WorldWideWalk.Droid.Helpers;
 
-[assembly: Xamarin.Forms.Dependency(typeof(AndroidServiceHelper))]
-namespace WorldWideWalk.Droid
+[assembly: Xamarin.Forms.Dependency(typeof(NotificationHelper))]
+namespace WorldWideWalk.Droid.Helpers
 {
     internal class NotificationHelper : INotification
     {
@@ -15,29 +15,27 @@ namespace WorldWideWalk.Droid
 
         public Notification ReturnNotif()
         {
-            // Building intent
             var intent = new Intent(context, typeof(MainActivity));
             intent.AddFlags(ActivityFlags.SingleTop);
-            intent.PutExtra("WorldWideWalk", "Lauf gestartet");
+            intent.PutExtra("Title", "Message");
 
             var pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.UpdateCurrent);
 
             var notifBuilder = new NotificationCompat.Builder(context, foregroundChannelId)
-                .SetContentTitle("WorldWideWalk")
-                .SetContentText("Lauf gestartet")
-                .SetSmallIcon(Resource.Drawable.abc_ic_star_half_black_36dp)
+                .SetContentTitle("Your Title")
+                .SetContentText("Your Message")
+                .SetSmallIcon(Resource.Drawable.location)
                 .SetOngoing(true)
                 .SetContentIntent(pendingIntent);
 
-            // Building channel if API verion is 26 or above
             if (global::Android.OS.Build.VERSION.SdkInt >= BuildVersionCodes.O)
             {
-                NotificationChannel notificationChannel = new NotificationChannel(foregroundChannelId, "WorldWideWalk", NotificationImportance.High);
+                NotificationChannel notificationChannel = new NotificationChannel(foregroundChannelId, "Title", NotificationImportance.High);
                 notificationChannel.Importance = NotificationImportance.High;
                 notificationChannel.EnableLights(true);
                 notificationChannel.EnableVibration(true);
                 notificationChannel.SetShowBadge(true);
-                notificationChannel.SetVibrationPattern(new long[] { 100, 200, 300, 400, 500, 400, 300, 200, 400 });
+                notificationChannel.SetVibrationPattern(new long[] { 100, 200, 300 });
 
                 var notifManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
                 if (notifManager != null)
