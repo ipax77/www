@@ -6,42 +6,88 @@
     <ContentPage.BindingContext>
         <vm:MainPageViewModel />
     </ContentPage.BindingContext>
-    <StackLayout VerticalOptions="Center">
-        <Button VerticalOptions="CenterAndExpand"
+    <ScrollView x:Name="scrollView">
+        <StackLayout x:Name="StackLayoutMap">
+            <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
+                <Label Text="WorldWideWalk" HorizontalTextAlignment="Center" TextColor="White" FontSize="36"/>
+            </Frame>
+            <ActivityIndicator x:Name="activityIndicator" IsRunning="True" />
+            <StackLayout>
+                <Grid BackgroundColor="#2196F3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Place new controls here -->
+                    <Label x:Name="LbWalk" Grid.Column="0" Text="Sponsorenlauf für Nepal" HorizontalOptions="StartAndExpand" VerticalOptions="Center" TextColor="White" FontSize="16" Padding="30,0,0,0"/>
+                    <Button Grid.Column="1" Text="Webseite" HorizontalOptions="End" VerticalOptions="Center" Clicked="OpenLink" />
+                </Grid>
+            </StackLayout>
+            <Frame BackgroundColor="Yellow" Padding="0" CornerRadius="0">
+                <Label x:Name="LbCurrent" Text="Es wurden bereits 0 km zurückgelegt." FontSize="16" Padding="30,10,30,10"/>
+            </Frame>
+            <Button x:Name="BtnStart" Text="Lauf starten" Clicked="StartRun" />
+            <Button x:Name="BtnStop" Text="Lauf stoppen" IsEnabled="False" />
+            <Button
+                IsVisible="false"
                 Text="Start Service"
                 Command="{Binding StartCommand}"
                 IsEnabled="{Binding StartEnabled}"/>
 
-        <Button VerticalOptions="CenterAndExpand"
+            <Button
+                IsVisible="false"
                 Text="Stop Service"
                 Command="{Binding EndCommand}"
                 IsEnabled="{Binding StopEnabled}"/>
 
-        <Label Text="Coordinates" VerticalOptions="CenterAndExpand" FontSize="Title"/>
+            <Label Text="Coordinates" FontSize="Title"/>
 
-        <Label>
-            <Label.FormattedText>
-                <FormattedString>
-                    <FormattedString.Spans>
-                        <Span Text="Latitude: "/>
-                        <Span Text="{Binding Latitude}"/>
-                    </FormattedString.Spans>
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-        <Label>
-            <Label.FormattedText>
-                <FormattedString>
-                    <FormattedString.Spans>
-                        <Span Text="Longitude: "/>
-                        <Span Text="{Binding Longitude}"/>
-                    </FormattedString.Spans>
-                </FormattedString>
-            </Label.FormattedText>
-        </Label>
-
-        <Label Text="{Binding UserMessage}" VerticalOptions="CenterAndExpand"/>
-
-    </StackLayout>
-
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="Latitude: "/>
+                            <Span Text="{Binding Latitude}"/>
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label>
+                <Label.FormattedText>
+                    <FormattedString>
+                        <FormattedString.Spans>
+                            <Span Text="Longitude: "/>
+                            <Span Text="{Binding Longitude}"/>
+                        </FormattedString.Spans>
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+            <Label Text="{Binding UserMessage}"/>
+            <StackLayout>
+                <Label x:Name="LbTime"></Label>
+                <Label x:Name="LbDistance"></Label>
+            </StackLayout>
+            <StackLayout x:Name="OfflineLayout" IsVisible="false">
+                <Label BackgroundColor="PaleVioletRed" Text="Verbinden um Deine Strecke zu übertragen. Für den Lauf musst Du nicht Online sein."></Label>
+                <Button Text="Verbinden" Clicked="TryGoOnline" />
+            </StackLayout>
+            <StackLayout x:Name="SubmitLayout" IsVisible="false">
+                <Picker x:Name="ClassPicker"></Picker>
+                <Entry x:Name="PseudonymEntry" IsSpellCheckEnabled="false" IsTextPredictionEnabled="false" Placeholder="Pseudonym" />
+                <Entry x:Name="PasswordEntry" IsSpellCheckEnabled="false" IsTextPredictionEnabled="false" IsPassword="true" Placeholder="Passwort" />
+                <Label x:Name="LbValidation" FontSize="Medium" TextColor="Red"></Label>
+                <Label Text="Mit der Eingabe des Passwortes erkläre ich mich einverstanden, dass die Daten genutzt werden dürfen. Es werden keine Positions-Daten übertragen, nur die Gesamtkilometer."></Label>
+                <Button Text="Senden" Clicked="Submit_Clicked" />
+                <Label Text=""/>
+            </StackLayout>
+            <StackLayout x:Name="FeedbackLayout" IsVisible="false">
+                <Label BackgroundColor="LightGreen" Text="Vielen Dank! Damit hast Du folgende Ziele erreicht:"></Label>
+                <Grid x:Name="FeedbackGrid">
+                </Grid>
+            </StackLayout>
+            <StackLayout x:Name="MapLayout" IsVisible="false">
+                <Grid x:Name="grMap"></Grid>
+            </StackLayout>
+        </StackLayout>
+    </ScrollView>    
 </ContentPage>

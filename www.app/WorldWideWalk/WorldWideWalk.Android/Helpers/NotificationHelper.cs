@@ -22,8 +22,8 @@ namespace WorldWideWalk.Droid.Helpers
             var pendingIntent = PendingIntent.GetActivity(context, 0, intent, PendingIntentFlags.UpdateCurrent);
 
             var notifBuilder = new NotificationCompat.Builder(context, foregroundChannelId)
-                .SetContentTitle("Your Title")
-                .SetContentText("Your Message")
+                .SetContentTitle("WorldWideWalk")
+                .SetContentText("Lauf gestartet")
                 .SetSmallIcon(Resource.Drawable.location)
                 .SetOngoing(true)
                 .SetContentIntent(pendingIntent);

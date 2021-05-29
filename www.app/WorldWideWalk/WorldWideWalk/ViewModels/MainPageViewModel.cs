@@ -102,7 +102,7 @@ namespace WorldWideWalk.ViewModels
                 Device.BeginInvokeOnMainThread(() => {
                     Latitude = message.Latitude;
                     Longitude = message.Longitude;
-                    UserMessage = "Location Updated";
+                    UserMessage = $"Location Updated ({Services.Location.Locations.Count})";
                 });
             });
             MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message => {
