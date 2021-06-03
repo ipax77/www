@@ -2,5 +2,6 @@
 {
     public class StopServiceMessage
     {
+        public string Message { get; set; }
     }
 }

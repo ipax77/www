@@ -1,5 +1,5 @@
-﻿using System;
-using CoreLocation;
+﻿using CoreLocation;
+using System;
 using UIKit;
 
 namespace WorldWideWalk.iOS

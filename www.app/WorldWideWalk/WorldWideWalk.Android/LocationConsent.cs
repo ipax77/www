@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Xamarin.Essentials;
 using WorldWideWalk.Droid;
+using Xamarin.Essentials;
 
 [assembly: Xamarin.Forms.Dependency(typeof(LocationConsent))]
 namespace WorldWideWalk.Droid

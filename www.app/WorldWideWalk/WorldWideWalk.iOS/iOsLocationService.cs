@@ -2,9 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using UIKit;
-using Xamarin.Forms;
 using WorldWideWalk.Messages;
 using WorldWideWalk.Services;
+using Xamarin.Forms;
 
 namespace WorldWideWalk.iOS.Services
 {

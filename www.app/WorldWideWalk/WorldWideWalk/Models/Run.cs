@@ -14,7 +14,7 @@ namespace WorldWideWalk.Models
         public List<RunItem> RunItems { get; set; } = new List<RunItem>();
         public double Distance { get; set; }
         [JsonIgnore]
-        public double AverageSpeedInKmH => (Distance / 1000) / (StopTime - StartTime).TotalHours;
+        public double AverageSpeedInKmH => Math.Round((Distance / 1000) / (StopTime - StartTime).TotalHours, 2);
         [JsonIgnore]
         public HtmlWebViewSource Html;
         public string SetRunInfo()

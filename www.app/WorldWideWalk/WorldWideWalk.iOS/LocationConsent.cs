@@ -17,7 +17,8 @@ namespace WorldWideWalk.iOS
         public async Task GetLocationConsent()
         {
             var manager = new CLLocationManager();
-            manager.AuthorizationChanged += (sender, args) => {
+            manager.AuthorizationChanged += (sender, args) =>
+            {
                 //Console.WriteLine("Authorization changed to: {0}", args.Status);
             };
             if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))

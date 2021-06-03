@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using WorldWideWalk.Messages;
 using WorldWideWalk.Models;
@@ -23,17 +21,44 @@ namespace WorldWideWalk
         public string ValidationMessage { get; set; }
         private string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
         private string walkUri = "https://www.pax77.org/www";
+        private string ErrorMessage = String.Empty;
 
-        private string userMessage;
+        private double latitude;
+        private double longitude;
+        public string userMessage;
+
+        public double Latitude
+        {
+            get => latitude;
+            set
+            {
+                latitude = value;
+                OnPropertyChanged(nameof(Latitude));
+            }
+        }
+        public double Longitude
+        {
+            get => longitude;
+            set
+            {
+                longitude = value;
+                OnPropertyChanged(nameof(Longitude));
+            }
+        }
         public string UserMessage
         {
             get => userMessage;
-            set => SetProperty(ref userMessage, value);
+            set
+            {
+                userMessage = value;
+                OnPropertyChanged(nameof(UserMessage));
+            }
         }
 
         public MainPage()
         {
             InitializeComponent();
+            this.BindingContext = this;
             PasswordEntry.Completed += PasswordEntry_Completed;
             PasswordEntry.TextChanged += PasswordEntry_TextChanged;
             PseudonymEntry.Completed += PseudonymEntry_Completed;
@@ -41,8 +66,6 @@ namespace WorldWideWalk
             restService = new RestService();
             GetWalk();
         }
-
-
 
         private async void OpenLink(object sender, EventArgs e)
         {
@@ -100,9 +123,11 @@ namespace WorldWideWalk
             BtnStop.Clicked += StopRun;
             Run = new Run();
             Run.StartTime = DateTime.UtcNow;
+
+            HandleReceivedMessages();
             var message = new StartServiceMessage();
             MessagingCenter.Send(message, "ServiceStarted");
-            UserMessage = "Location Service has been started!";
+            UserMessage = "Der Service wurde gestartet.";
             await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "1");
         }
 
@@ -115,6 +140,7 @@ namespace WorldWideWalk
             BtnStop.IsEnabled = false;
             BtnStop.Clicked -= StopRun;
             Run.StopTime = DateTime.UtcNow;
+            ErrorMessage = String.Empty;
 
             Run.RunItems = Services.Location.Locations.Select(s => new RunItem()
             {
@@ -123,6 +149,17 @@ namespace WorldWideWalk
                 Accuracy = (double)s.Accuracy,
                 TimeStamp = s.Timestamp
             }).ToList();
+
+
+            var message = new StopServiceMessage();
+            MessagingCenter.Send(message, "ServiceStopped");
+            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
+            if (!String.IsNullOrEmpty(ErrorMessage))
+                UserMessage = ErrorMessage;
+            else
+                UserMessage = "Der Service wurde beendet.";
+            UnSubscribe();
+
             var response = Run.SetRunInfo();
             if (!String.IsNullOrEmpty(response))
             {
@@ -136,14 +173,11 @@ namespace WorldWideWalk
             {
                 LbTime.Text = $"Laufzeit: {(Run.StopTime - Run.StartTime).ToString(@"hh\:mm\:ss")}";
             }
-            LbDistance.Text = "Zurückgelegt: " + Math.Round(Run.Distance, 2).ToString() + " m";
+            LbDistance.Text = $"Zurückgelegt: {Math.Round(Run.Distance, 2).ToString()} m (Ø {Run.AverageSpeedInKmH} km/h)";
 
             bool success = await InitRunData();
 
-            var message = new StopServiceMessage();
-            MessagingCenter.Send(message, "ServiceStopped");
-            UserMessage = "Location Service has been stopped!";
-            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
+
 
             activityIndicator.IsVisible = false;
             activityIndicator.IsRunning = false;
@@ -220,45 +254,54 @@ namespace WorldWideWalk
             activityIndicator.IsVisible = false;
         }
 
-        private void LocationManager_LocationUpdated(object sender, Models.LocationUpdatedEventArgs e)
+        void HandleReceivedMessages()
         {
-            if (Run.RunItems.Count == 0 && !String.IsNullOrEmpty(e.Error))
+            MessagingCenter.Subscribe<LocationMessage>(this, "Location", message =>
             {
-                StopRun(null, null);
-                LbTime.Text = e.Error;
-                return;
-            }
-            else
-            {
-                Run.RunItems.Add(new RunItem()
+                Device.BeginInvokeOnMainThread(() =>
                 {
-                    Latitude = e.Latitude,
-                    Longitude = e.Longitude,
-                    Accuracy = e.Accuracy == null ? 0 : (double)e.Accuracy,
-                    TimeStamp = e.Timestamp,
-                    Error = e.Error
+                    Latitude = message.Latitude;
+                    Longitude = message.Longitude;
+                    UserMessage = $"Location Updated ({Services.Location.Locations.Count})";
                 });
-
-                if (Run.RunItems.Count % 10 == 0)
+            });
+            MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message =>
+            {
+                Device.BeginInvokeOnMainThread(() =>
                 {
-                    var distance = Run.GetStepInfo();
-                    if ((DateTime.UtcNow - Run.StartTime) > App.MaxRunTime)
+                    if (!String.IsNullOrEmpty(message.Message))
                     {
+                        ErrorMessage = message.Message;
                         StopRun(null, null);
-                        LbTime.Text = "Der Lauf wurde nach 2h gestoppt.";
-                        return;
                     }
+                });
+            });
+            MessagingCenter.Subscribe<LocationErrorMessage>(this, "LocationError", message =>
+            {
+                Device.BeginInvokeOnMainThread(async () =>
+                {
+                    UserMessage = $"Fehler beim ermitteln der Position: {message.Error}";
+                    Console.WriteLine(message.Error);
+                    if (message.isFatal)
+                    {
+                        var stopmessage = new StopServiceMessage()
+                        {
+                            Message = message.Error
+                        };
+                        ErrorMessage = $"Fehler beim ermitteln der Position: {message.Error}";
+                        MessagingCenter.Send(stopmessage, "ServiceStopped");
+                        await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
 
-                    //if (Run.AverageSpeedInKmH > App.MaxSpeedInKmH)
-                    //{
-                    //    StopRun(null, null);
-                    //    LbTime.Text = "Die maximal erlaubte Geschwindigkeit wurde überschritten.";
-                    //    return;
-                    //}
-                    LbTime.Text = $"Laufzeit: {(DateTime.UtcNow - Run.StartTime).ToString(@"hh\:mm\:ss")}";
-                    LbDistance.Text = "Zurückgelegt: " + distance + " m";
-                }
-            }
+                    }
+                });
+            });
+        }
+
+        void UnSubscribe()
+        {
+            MessagingCenter.Unsubscribe<LocationMessage>(this, "Location");
+            MessagingCenter.Unsubscribe<LocationMessage>(this, "ServiceStopped");
+            MessagingCenter.Unsubscribe<LocationMessage>(this, "LocationError");
         }
 
         private void PseudonymEntry_Completed(object sender, EventArgs e)
@@ -454,37 +497,41 @@ namespace WorldWideWalk
             LbCurrent.Text = $"Es wurden {Walk.CurrentDistance} von {Walk.TotalDistance} km zurückgelegt.";
         }
 
-        protected bool SetProperty<T>(ref T backingStore, T value,
-            [CallerMemberName] string propertyName = "",
-            Action onChanged = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(backingStore, value))
-                return false;
+        //protected bool SetProperty<T>(ref T backingStore, T value,
+        //    [CallerMemberName] string propertyName = "",
+        //    Action onChanged = null)
+        //{
+        //    if (EqualityComparer<T>.Default.Equals(backingStore, value))
+        //        return false;
 
-            backingStore = value;
-            onChanged?.Invoke();
-            OnPropertyChanged(propertyName);
-            return true;
-        }
+        //    backingStore = value;
+        //    onChanged?.Invoke();
+        //    OnPropertyChanged(propertyName);
+        //    return true;
+        //}
 
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            var changed = PropertyChanged;
-            if (changed == null)
-                return;
+        //#region INotifyPropertyChanged
+        //public event PropertyChangedEventHandler PropertyChanged;
+        //protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        //{
+        //    var changed = PropertyChanged;
+        //    if (changed == null)
+        //        return;
 
-            changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        #endregion
+        //    changed.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //}
+        //#endregion
 
-        public void Dispose()
+        public async void Dispose()
         {
             PasswordEntry.Completed -= PasswordEntry_Completed;
             PseudonymEntry.Completed -= PseudonymEntry_Completed;
             PasswordEntry.TextChanged -= PasswordEntry_TextChanged;
             PseudonymEntry.TextChanged -= PseudonymEntry_TextChanged;
+            UnSubscribe();
+            var message = new StopServiceMessage();
+            MessagingCenter.Send(message, "ServiceStopped");
+            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
         }
     }
 }

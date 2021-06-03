@@ -2,9 +2,9 @@
 using Foundation;
 using System;
 using UIKit;
-using Xamarin.Forms;
 using WorldWideWalk.iOS.Services;
 using WorldWideWalk.Messages;
+using Xamarin.Forms;
 
 namespace WorldWideWalk.iOS
 {
@@ -51,12 +51,14 @@ namespace WorldWideWalk.iOS
 
         void SetServiceMethods()
         {
-            MessagingCenter.Subscribe<StartServiceMessage>(this, "ServiceStarted", async message => {
+            MessagingCenter.Subscribe<StartServiceMessage>(this, "ServiceStarted", async message =>
+            {
                 if (!locationService.isStarted)
                     await locationService.Start();
             });
 
-            MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message => {
+            MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message =>
+            {
                 if (locationService.isStarted)
                     locationService.Stop();
             });

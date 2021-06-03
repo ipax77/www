@@ -1,17 +1,16 @@
-﻿using System;
-
+﻿
 using Android.App;
-using Android.Content.PM;
-using Android.Runtime;
-using Android.OS;
 using Android.Content;
+using Android.Content.PM;
+using Android.OS;
+using Android.Runtime;
 using WorldWideWalk.Droid.Services;
-using Xamarin.Forms;
 using WorldWideWalk.Messages;
+using Xamarin.Forms;
 
 namespace WorldWideWalk.Droid
 {
-    [Activity(Label = "WorldWideWalk", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize )]
+    [Activity(Label = "WorldWideWalk", Icon = "@mipmap/ic_launcher", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize)]
     public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
     {
         Intent serviceIntent;
@@ -45,7 +44,8 @@ namespace WorldWideWalk.Droid
 
         void SetServiceMethods()
         {
-            MessagingCenter.Subscribe<StartServiceMessage>(this, "ServiceStarted", message => {
+            MessagingCenter.Subscribe<StartServiceMessage>(this, "ServiceStarted", message =>
+            {
                 if (!IsServiceRunning(typeof(AndroidLocationService)))
                 {
                     if (Android.OS.Build.VERSION.SdkInt >= Android.OS.BuildVersionCodes.O)
@@ -59,9 +59,12 @@ namespace WorldWideWalk.Droid
                 }
             });
 
-            MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message => {
+            MessagingCenter.Subscribe<StopServiceMessage>(this, "ServiceStopped", message =>
+            {
                 if (IsServiceRunning(typeof(AndroidLocationService)))
+                {
                     StopService(serviceIntent);
+                }
             });
         }
 
@@ -87,8 +90,14 @@ namespace WorldWideWalk.Droid
 
                 }
             }
-
             base.OnActivityResult(requestCode, resultCode, data);
+        }
+
+        protected override void OnDestroy()
+        {
+            var message = new StopServiceMessage();
+            MessagingCenter.Send(message, "ServiceStopped");
+            base.OnDestroy();
         }
     }
 }

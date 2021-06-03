@@ -1,11 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:WorldWideWalk.ViewModels"
              x:Class="WorldWideWalk.MainPage">
-    <ContentPage.BindingContext>
-        <vm:MainPageViewModel />
-    </ContentPage.BindingContext>
     <ScrollView x:Name="scrollView">
         <StackLayout x:Name="StackLayoutMap">
             <Frame BackgroundColor="#2196F3" Padding="24" CornerRadius="0">
@@ -28,41 +24,30 @@
             </Frame>
             <Button x:Name="BtnStart" Text="Lauf starten" Clicked="StartRun" />
             <Button x:Name="BtnStop" Text="Lauf stoppen" IsEnabled="False" />
-            <Button
-                IsVisible="false"
-                Text="Start Service"
-                Command="{Binding StartCommand}"
-                IsEnabled="{Binding StartEnabled}"/>
-
-            <Button
-                IsVisible="false"
-                Text="Stop Service"
-                Command="{Binding EndCommand}"
-                IsEnabled="{Binding StopEnabled}"/>
-
-            <Label Text="Coordinates" FontSize="Title"/>
-
-            <Label>
-                <Label.FormattedText>
-                    <FormattedString>
-                        <FormattedString.Spans>
-                            <Span Text="Latitude: "/>
-                            <Span Text="{Binding Latitude}"/>
-                        </FormattedString.Spans>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
-            <Label>
-                <Label.FormattedText>
-                    <FormattedString>
-                        <FormattedString.Spans>
-                            <Span Text="Longitude: "/>
-                            <Span Text="{Binding Longitude}"/>
-                        </FormattedString.Spans>
-                    </FormattedString>
-                </Label.FormattedText>
-            </Label>
-            <Label Text="{Binding UserMessage}"/>
+            <StackLayout x:Name="CoordLayout">
+                <Label Text="Coordinates" FontSize="Title"/>
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Latitude: "/>
+                                <Span Text="{Binding Latitude}"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <FormattedString.Spans>
+                                <Span Text="Longitude: "/>
+                                <Span Text="{Binding Longitude}"/>
+                            </FormattedString.Spans>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label Text="{Binding UserMessage}"/>
+            </StackLayout>
             <StackLayout>
                 <Label x:Name="LbTime"></Label>
                 <Label x:Name="LbDistance"></Label>
