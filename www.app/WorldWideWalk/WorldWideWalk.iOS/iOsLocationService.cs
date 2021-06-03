@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreLocation;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using UIKit;
@@ -13,11 +14,23 @@ namespace WorldWideWalk.iOS.Services
         nint _taskId;
         CancellationTokenSource _cts;
         public bool isStarted = false;
+        readonly CLLocationManager locMgr = new CLLocationManager();
 
         public async Task Start()
         {
             _cts = new CancellationTokenSource();
             _taskId = UIApplication.SharedApplication.BeginBackgroundTask("com.mycompany.worldwidewalk", OnExpiration);
+
+            //Background Location Permissions
+            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+            {
+                locMgr.RequestAlwaysAuthorization();
+            }
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+            {
+                locMgr.AllowsBackgroundLocationUpdates = true;
+            }
 
             try
             {

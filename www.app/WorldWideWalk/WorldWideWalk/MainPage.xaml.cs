@@ -128,7 +128,7 @@ namespace WorldWideWalk
             var message = new StartServiceMessage();
             MessagingCenter.Send(message, "ServiceStarted");
             UserMessage = "Der Service wurde gestartet.";
-            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "1");
+            // await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "1");
         }
 
         private async void StopRun(object sender, EventArgs e)
@@ -153,7 +153,7 @@ namespace WorldWideWalk
 
             var message = new StopServiceMessage();
             MessagingCenter.Send(message, "ServiceStopped");
-            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
+            // await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
             if (!String.IsNullOrEmpty(ErrorMessage))
                 UserMessage = ErrorMessage;
             else
@@ -290,7 +290,7 @@ namespace WorldWideWalk
                         };
                         ErrorMessage = $"Fehler beim ermitteln der Position: {message.Error}";
                         MessagingCenter.Send(stopmessage, "ServiceStopped");
-                        await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
+                        // await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
 
                     }
                 });
@@ -531,7 +531,7 @@ namespace WorldWideWalk
             UnSubscribe();
             var message = new StopServiceMessage();
             MessagingCenter.Send(message, "ServiceStopped");
-            await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
+            // await SecureStorage.SetAsync(Constants.SERVICE_STATUS_KEY, "0");
         }
     }
 }

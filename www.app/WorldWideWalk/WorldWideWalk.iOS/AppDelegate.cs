@@ -23,7 +23,6 @@ namespace WorldWideWalk.iOS
         //
 
         iOsLocationService locationService;
-        readonly CLLocationManager locMgr = new CLLocationManager();
 
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {
@@ -33,18 +32,6 @@ namespace WorldWideWalk.iOS
             LoadApplication(new App());
 
             UIApplication.SharedApplication.SetMinimumBackgroundFetchInterval(UIApplication.BackgroundFetchIntervalMinimum);
-
-            //Background Location Permissions
-            if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-            {
-                locMgr.RequestAlwaysAuthorization();
-            }
-
-            if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
-            {
-                locMgr.AllowsBackgroundLocationUpdates = true;
-            }
-
 
             return base.FinishedLaunching(app, options);
         }
