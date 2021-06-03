@@ -15,10 +15,9 @@ namespace www.pwa.Shared
         public string NextTarget { get; set; }
         public List<School> Schools { get; set; }
         public static TimeSpan MaxRunTime { get; set; }
-        public double MaxSpeedInKmH { get; set; }
         public List<WalkPoints> Points { get; set; }
+        public double MaxSpeedInKmH { get; set; } = 40;
         public double MaxDuration { get; set;} = 2;
-        public double MaxSpeed { get; set; } = 40;
 
         public (WalkPoints, WalkPoints) GetNextAndCurrentPoint()
         {

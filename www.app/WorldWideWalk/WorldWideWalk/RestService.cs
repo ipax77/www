@@ -57,7 +57,9 @@ namespace WorldWideWalk
                 if (response.IsSuccessStatusCode)
                 {
                     string content = await response.Content.ReadAsStringAsync();
-                    return JsonSerializer.Deserialize<WalkAppModel>(content, jsonOptions);
+                    var walk = JsonSerializer.Deserialize<WalkAppModel>(content, jsonOptions);
+                    App.MaxRunTime = TimeSpan.FromHours(walk.MaxDuration);
+                    App.MaxSpeedInKmH = walk.MaxSpeedInKmH;
                 }
             }
             catch (Exception e)

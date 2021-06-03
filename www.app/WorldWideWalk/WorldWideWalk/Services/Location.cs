@@ -55,6 +55,8 @@ namespace WorldWideWalk.Services
                                 location.Timestamp
                             ));
 
+                            // Console.WriteLine($"Lat/Long: {location.Latitude}/{location.Longitude}");
+
                             if (i % 10 == 0)
                             {
                                 var message = new LocationMessage
