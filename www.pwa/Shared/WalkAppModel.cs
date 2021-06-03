@@ -17,6 +17,8 @@ namespace www.pwa.Shared
         public static TimeSpan MaxRunTime { get; set; }
         public double MaxSpeedInKmH { get; set; }
         public List<WalkPoints> Points { get; set; }
+        public double MaxDuration { get; set;} = 2;
+        public double MaxSpeed { get; set; } = 40;
 
         public (WalkPoints, WalkPoints) GetNextAndCurrentPoint()
         {
