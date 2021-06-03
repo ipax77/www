@@ -23,15 +23,15 @@
 	<key>MinimumOSVersion</key>
 	<string>8.0</string>
 	<key>CFBundleDisplayName</key>
-	<string>XamarinForms.LocationService</string>
+	<string>WorldWideWalk</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.companyname.XamarinForms.LocationService</string>
+	<string>com.companyname.WorldWideWalk</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>CFBundleName</key>
-	<string>XamarinForms.LocationService</string>
+	<string>WorldWideWalk</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcon.appiconset</string>
 	<key>UIBackgroundModes</key>
