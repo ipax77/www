@@ -1,0 +1,179 @@
+@page "/sponsoren"
+@using System.Text.Json
+@using pwa.Shared
+@inject IHttpClientFactory httpClient;
+
+<h3>Sponsoren anlegen</h3>
+
+@if (isLoading) {
+    <LoadingComponent></LoadingComponent>
+}
+
+@if (editContext != null) {
+    <EditForm EditContext="editContext" OnValidSubmit="onValidSubmit" OnInvalidSubmit="onInvalidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpseudonym">
+                Pseudonym:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputText id="newpseudonym" class="form-control" @bind-Value="sponsorModel.EntityName" />
+                <ValidationMessage For="@(() => sponsorModel.EntityName)"></ValidationMessage>
+            </div>
+        </div>        
+        <div class="form-group form-group row justify-content-start mb-1">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newschoolclass">
+                Klasse:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputSelect id="newschoolclass" class="form-control" @bind-Value="@sponsorModel.SchoolClass">
+                    <option value="">Wähle die Klasse ...</option>
+                    @foreach (string schoolclass in walk.Schools.First(f => f.Name == sponsorModel.School).SchoolClasses.Select(s => s.Name))
+                    {
+                        <option value="@schoolclass">@schoolclass</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>    
+        <div class="form-group row justify-content-start">
+            <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpwd">
+                Passwort:
+            </label>
+            <div class="col-sm-6 col-xl-3">
+                <InputText id="newpwd" type="text" autocorrect="off" autocapitalize="off" class="form-control" @bind-Value="@sponsorModel.Credential" />
+                <ValidationMessage For="@(() => sponsorModel.Credential)"></ValidationMessage>
+            </div>
+        </div>     
+
+        <h4>Sponsoren (maximal 3):</h4>
+        @foreach (var sponsor in sponsorModel.Sponsors) {
+            <div class="d-inline float-right">
+                <span class="oi oi-x bg-danger pointer" @onclick="e => RemoveSponsor(sponsor)"></span>
+            </div>
+            <div class="form-group row justify-content-start">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted" for="newpwd">
+                    Sponsor-Name:
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputText id="newpwd" type="text" autocorrect="off" autocapitalize="off" class="form-control" @bind-Value="@sponsor.Sponsor" />
+                    <ValidationMessage For="@(() => sponsor.Sponsor)"></ValidationMessage>
+                </div>
+            </div>               
+            <div class="form-group form-group row justify-content-start mb-1">
+                <label class="col-sm-4 col-lg-2 col-xl-2 col-form-label text-muted">
+                    Cent pro Kilometer:
+                </label>
+                <div class="col-sm-6 col-xl-3">
+                    <InputNumber class="form-control" @bind-Value="@sponsor.CentPerKm" />
+                    <ValidationMessage For="@(() => sponsor.CentPerKm)"></ValidationMessage>
+                </div>
+            </div>            
+        }
+        <div>
+            <button type="button" class="btn btn-secondary ml-3" @onclick="AddSponsor">Neuer Sponsor</button>
+        </div>
+        <br />
+        <div style="max-width: 600px;">
+            <small>
+                Mit der Eingabe des Passwortes erkläre ich mich einverstanden, dass die Daten auf dieser Webseite genutzt werden dürfen.
+                Die Sponsoren sind nicht öffentlich sichtbar. Eine autorisierte Person (Lehrer) muss die Sponsoren freigeben, damit sie in der Berechnung berücksichtigt werden.
+            </small>
+        </div>
+        @if (!String.IsNullOrEmpty(Feedback)) {
+            <div>
+                <h3><span class="badge @FeedbackBackground">@Feedback</span></h3>
+            </div>
+        }
+        <div>
+            <button type="submit" class="btn btn-primary">Senden</button>
+        </div>
+    </EditForm>
+}
+
+
+@code {
+    CreateSponsoresModel sponsorModel;
+    EditContext editContext;
+    HttpClient Http;
+    string walkGuid = "7A40C465-BDC8-4373-B6BE-6E49C10D5ECA";
+    WalkAppModel walk;
+    bool isLoading = true;
+    string Feedback = String.Empty;
+    string FeedbackBackground = "bg-info";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
+        walk = await Http.GetFromJsonAsync<WalkAppModel>($"WwwRun/walk/{walkGuid}");
+        sponsorModel = new CreateSponsoresModel() {
+            WalkGuid = walkGuid,
+            School = walk.Schools.First().Name,
+            Sponsors = new List<SponsorModel>() { new SponsorModel() }
+        };
+        editContext = new EditContext(sponsorModel);
+        isLoading = false;
+    }
+
+    void AddSponsor() {
+        if (sponsorModel.Sponsors.Count < 3)
+            sponsorModel.Sponsors.Add(new SponsorModel());
+    }
+
+    void RemoveSponsor(SponsorModel sponsor) {
+        sponsorModel.Sponsors.Remove(sponsor);
+        if (!sponsorModel.Sponsors.Any())
+            sponsorModel.Sponsors.Add(new SponsorModel());
+    }
+
+    async void onValidSubmit() {
+        Feedback = "";
+        FeedbackBackground = "bg-info";
+        if (sponsorModel.Sponsors.Any()) {
+            List<string> validationMessages = new List<string>();
+            foreach (var sponsor in sponsorModel.Sponsors) {
+                ICollection<string> msgs = new List<string>();
+                bool isValid = SponsorModel.Validate(sponsor, out msgs);
+                if (!isValid)
+                    validationMessages.AddRange(msgs);
+            }
+            if (validationMessages.Any()) {
+                Feedback = String.Join(Environment.NewLine, validationMessages);
+                FeedbackBackground = "bg-danger";
+                StateHasChanged();
+                return;
+            }
+
+            isLoading = true;
+            await InvokeAsync(() => StateHasChanged());
+            var response = await Http.PostAsJsonAsync("WwwSponsor", sponsorModel);
+            try {
+            if (response.IsSuccessStatusCode) {
+                Feedback = "Vielen Dank! Die Daten wurden erfolgreich übertragen.";
+                FeedbackBackground = "bg-success";
+                sponsorModel.Credential = String.Empty;
+            } else {
+                if (response.StatusCode == System.Net.HttpStatusCode.BadRequest) {
+                    Feedback = "Das Pseudonym ist schon in einer anderen Klasse vergeben.";
+                } else {
+                    Feedback = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
+                }
+                FeedbackBackground = "bg-danger";
+            }
+            } catch {
+                Feedback = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
+                FeedbackBackground = "bg-danger";
+            }
+            isLoading = false;
+            await InvokeAsync(() => StateHasChanged());
+        } else {
+            Feedback = "Mindestens ein Sponsor muss eingetragen werden.";
+            FeedbackBackground = "bg-danger";
+        }
+    }
+
+    void onInvalidSubmit() {
+        Feedback = "";
+        FeedbackBackground = "bg-info";
+    }
+} 

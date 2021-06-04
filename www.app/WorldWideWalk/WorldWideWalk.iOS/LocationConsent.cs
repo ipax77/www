@@ -8,23 +8,26 @@ namespace WorldWideWalk.iOS
 {
     public class LocationConsent : ILocationConsent
     {
-        public static LocationManager Manager { get; set; }
+        readonly CLLocationManager locMgr = new CLLocationManager()
+        {
+            PausesLocationUpdatesAutomatically = false
+        };
         public LocationConsent()
         {
-            Manager = new LocationManager();
-            Manager.StartLocationUpdates();
         }
-        public async Task GetLocationConsent()
+        public async Task<bool> GetLocationConsent()
         {
-            var manager = new CLLocationManager();
-            manager.AuthorizationChanged += (sender, args) =>
-            {
-                //Console.WriteLine("Authorization changed to: {0}", args.Status);
-            };
+            //Background Location Permissions
             if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
             {
-                manager.RequestAlwaysAuthorization();
+                locMgr.RequestAlwaysAuthorization();
             }
+
+            if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+            {
+                locMgr.AllowsBackgroundLocationUpdates = true;
+            }
+            return true;
         }
     }
 }

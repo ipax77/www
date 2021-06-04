@@ -97,6 +97,7 @@ namespace WorldWideWalk.Droid
         {
             var message = new StopServiceMessage();
             MessagingCenter.Send(message, "ServiceStopped");
+            serviceIntent.Dispose();
             base.OnDestroy();
         }
     }

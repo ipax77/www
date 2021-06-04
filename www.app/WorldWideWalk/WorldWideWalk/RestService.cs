@@ -60,6 +60,7 @@ namespace WorldWideWalk
                     var walk = JsonSerializer.Deserialize<WalkAppModel>(content, jsonOptions);
                     App.MaxRunTime = TimeSpan.FromHours(walk.MaxDuration);
                     App.MaxSpeedInKmH = walk.MaxSpeedInKmH;
+                    return walk;
                 }
             }
             catch (Exception e)

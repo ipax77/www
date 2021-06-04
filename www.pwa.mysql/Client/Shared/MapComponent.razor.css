@@ -1,0 +1,14 @@
+
+.mapcontainer {
+    width: 50vw;
+    max-width: 900px;
+    height: calc(50vw / 1.72);
+    max-height: 523.26px;;
+}
+
+@media only screen and (max-width: 641px) {
+    .mapcontainer {
+        width: 90vw;
+        height: calc(90vw / 1.72);
+    }
+}

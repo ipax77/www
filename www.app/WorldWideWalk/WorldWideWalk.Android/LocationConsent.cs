@@ -7,9 +7,13 @@ namespace WorldWideWalk.Droid
 {
     public class LocationConsent : ILocationConsent
     {
-        public async Task GetLocationConsent()
+        public async Task<bool> GetLocationConsent()
         {
-            await Permissions.RequestAsync<Permissions.LocationAlways>();
+            var status = await Permissions.RequestAsync<Permissions.LocationAlways>();
+            if (status == PermissionStatus.Granted)
+                return true;
+            else
+                return false;
         }
     }
 }

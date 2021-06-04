@@ -4,6 +4,6 @@ namespace WorldWideWalk
 {
     public interface ILocationConsent
     {
-        Task GetLocationConsent();
+        Task<bool> GetLocationConsent();
     }
 }

@@ -1,0 +1,26 @@
+<div class="float-left mr-5">
+    <label for="@guid" style="display: block;">@Title</label>
+    <span id="@guid" class="tristate tristate-checkbox" style="display: block;">
+        <input type="radio" id="@(guid)-state-off" name="@(guid)" value="2" checked @onchange="e => SetTo(2)">
+        <input type="radio" id="@(guid)-state-null" name="@(guid)" value="1" @onchange="e => SetTo(1)">
+        <input type="radio" id="@(guid)-state-on" name="@(guid)" value="0" @onchange="e => SetTo(0)">
+        <i></i>
+        <label for="@(guid)-state-null">All</label>
+        <label for="@(guid)-state-on">Exc</label>
+        <label for="@(guid)-state-off">Inc</label>
+    </span>
+</div>
+@code {
+    int checkboxState = 0;
+    string guid = Guid.NewGuid().ToString();
+
+    [Parameter]
+    public string Title {get; set;}
+    [Parameter]
+    public EventCallback<int> onStateSet {get; set;}
+
+    private void SetTo(int i) {
+        onStateSet.InvokeAsync(i);
+    }
+
+}

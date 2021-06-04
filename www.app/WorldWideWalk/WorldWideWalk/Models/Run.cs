@@ -24,8 +24,12 @@ namespace WorldWideWalk.Models
 
             RunItems = FilterData();
             Distance = Math.Round(RunItems.Select(s => s.Distance).Sum(), 2);
+
+            // Distance = 1001;
+
             if (AverageSpeedInKmH > App.MaxSpeedInKmH)
                 return "Maximale Höchstgeschwindigkeit überschritten.";
+
             Html = SetWebViewSource();
             return "";
         }

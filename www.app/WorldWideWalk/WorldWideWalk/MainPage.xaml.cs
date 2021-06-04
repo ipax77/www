@@ -13,6 +13,7 @@ namespace WorldWideWalk
     public partial class MainPage : ContentPage, IDisposable
     {
         private IRestService restService;
+        private ILocationConsent locationConsent;
         private Run Run = new Run();
         private Run DebugRun;
         private WalkAppModel Walk;
@@ -64,6 +65,7 @@ namespace WorldWideWalk
             PseudonymEntry.Completed += PseudonymEntry_Completed;
             PseudonymEntry.TextChanged += PseudonymEntry_TextChanged;
             restService = new RestService();
+            locationConsent = DependencyService.Get<ILocationConsent>();
             GetWalk();
         }
 
@@ -108,8 +110,11 @@ namespace WorldWideWalk
                 bool confirmed = await DisplayAlert("Positions-Daten", "Diese App benötigt Zugriff auf die Positions-Daten (GPS), um die zurückgelegte Strecke zu ermitteln. Es werden keine Positions-Daten übermittelt oder gespeichert, nur die gesamte Distanz der Strecke.", "OK", "Ablehnen");
                 if (!confirmed)
                     return;
+                var granted = await locationConsent.GetLocationConsent();
+                if (!granted)
+                    return;
             }
-
+            
             SubmitLayout.IsVisible = false;
             MapLayout.IsVisible = false;
             FeedbackLayout.IsVisible = false;
