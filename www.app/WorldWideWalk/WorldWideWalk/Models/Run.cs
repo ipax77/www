@@ -23,7 +23,7 @@ namespace WorldWideWalk.Models
                 return "Zu wenige Daten";
 
             RunItems = FilterData();
-            Distance = Math.Round(RunItems.Select(s => s.Distance).Sum(), 2);
+            Distance = Math.Round(RunItems.Select(s => s.Distance).Sum() * 1.15, 2);
 
             // Distance = 1001;
 
