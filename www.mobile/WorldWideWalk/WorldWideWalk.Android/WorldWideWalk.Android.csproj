@@ -16,7 +16,6 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
     <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
     <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
     <AndroidUseAapt2>true</AndroidUseAapt2>
@@ -94,7 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\WorldWideWalk\WorldWideWalk.csproj">
-      <Project>{B1E15459-C6B3-4CE5-B6C1-B0BD64EFD55F}</Project>
+      <Project>{0E6975A9-91CE-4D84-B93B-C165E7A507B8}</Project>
       <Name>WorldWideWalk</Name>
     </ProjectReference>
   </ItemGroup>

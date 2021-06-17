@@ -33,7 +33,7 @@
 	<key>CFBundleName</key>
 	<string>WorldWideWalk</string>
 	<key>XSAppIconAssets</key>
-	<string>Assets.xcassets/AppIcon.appiconset</string>
+	<string>Media.xcassets/AppIcon.appiconset</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

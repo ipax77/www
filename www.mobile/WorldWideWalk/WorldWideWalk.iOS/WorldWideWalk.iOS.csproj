@@ -120,6 +120,28 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon20.png">
       <Visible>false</Visible>
     </ImageAsset>
+    <ImageAsset Include="Media.xcassets\Contents.json" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www60.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www87.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www20.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www29.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-2.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80-1.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www76.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www152.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www167.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-2.png" />
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180-1.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -144,7 +166,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\WorldWideWalk\WorldWideWalk.csproj">
-      <Project>{B1E15459-C6B3-4CE5-B6C1-B0BD64EFD55F}</Project>
+      <Project>{0E6975A9-91CE-4D84-B93B-C165E7A507B8}</Project>
       <Name>WorldWideWalk</Name>
     </ProjectReference>
   </ItemGroup>
