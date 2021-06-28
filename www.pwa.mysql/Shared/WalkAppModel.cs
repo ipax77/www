@@ -36,7 +36,7 @@ namespace www.pwa.Shared
                 {
                     NextPoint = point;
                     NextTarget = NextPoint.Name;
-                    addDistance = currentDistance - point.Distance;
+                    addDistance = currentDistance - LastPoint.Distance;
                     break;
                 }
                 LastPoint = point;
@@ -45,7 +45,7 @@ namespace www.pwa.Shared
             if (NextPoint != null)
             {
                 var d = RunService.GetDistance(LastPoint.Latitude, LastPoint.Longitude, NextPoint.Latitude, NextPoint.Longitude);
-                var t = ((addDistance * 1000) / d) * -1;
+                var t = ((addDistance * 1000) / d);
                 var x = ((1 - t) * LastPoint.Latitude + t * NextPoint.Latitude);
                 var y = ((1 - t) * LastPoint.Longitude + t * NextPoint.Longitude);
                 CurrentPoint = new WalkPoints()
