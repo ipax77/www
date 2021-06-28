@@ -99,7 +99,7 @@ namespace www.pwa.Server
                     Name = "Sponsorenlauf für Nepal",
                     Guid = new Guid("7A40C465-BDC8-4373-B6BE-6E49C10D5ECA"),
                     Description = "",
-                    TotalDistance = 8400.0f,
+                    TotalDistance = 7257.5f,
                     isActive = true,
                     Credential = Configuration["DefaultCredential"],
                     WwwSchools = new List<WwwSchool>() {

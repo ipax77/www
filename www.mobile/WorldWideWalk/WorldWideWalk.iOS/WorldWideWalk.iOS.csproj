@@ -120,28 +120,72 @@
     <ImageAsset Include="Assets.xcassets\AppIcon.appiconset\Icon20.png">
       <Visible>false</Visible>
     </ImageAsset>
-    <ImageAsset Include="Media.xcassets\Contents.json" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\Contents.json" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www60.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www87.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-1.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www20.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-1.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www29.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58-1.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-2.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80-1.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www76.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www152.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www167.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-2.png" />
-    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180-1.png" />
+    <ImageAsset Include="Media.xcassets\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\Contents.json">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www60.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www87.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-1.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www20.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-1.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www29.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www58-1.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www40-2.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www80-1.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www76.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www152.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www167.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www120-2.png">
+      <Visible>false</Visible>
+    </ImageAsset>
+    <ImageAsset Include="Media.xcassets\AppIcon.appiconset\www180-1.png">
+      <Visible>false</Visible>
+    </ImageAsset>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -155,14 +199,14 @@
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2012" />
     <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
   </ItemGroup>
-<ItemGroup>
-<PackageReference Include="System.Memory" Version="4.5.4">
-<IncludeAssets>none</IncludeAssets>
-</PackageReference>
-<PackageReference Include="System.Buffers" Version="4.5.1">
-<IncludeAssets>none</IncludeAssets>
-</PackageReference>
-</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.4">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Buffers" Version="4.5.1">
+      <IncludeAssets>none</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\WorldWideWalk\WorldWideWalk.csproj">

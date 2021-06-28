@@ -29,7 +29,8 @@ namespace www.pwa.Shared {
     public class SponsorModel {
         [Required(ErrorMessage = "Das Feld Sponsor wird benötigt.")]
         public string Sponsor { get; set; }
-        [Range(0.01, 100, ErrorMessage = "Mindestens 0.01, höchstens 100.")]
+        [Required]
+        [Range(1, 100, ErrorMessage = "Mindestens 1, höchstens 100.")]
         public double CentPerKm { get; set; }
 
         public static bool Validate<T>(T obj, out ICollection<string> results)
