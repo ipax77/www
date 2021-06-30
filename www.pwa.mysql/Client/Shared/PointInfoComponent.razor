@@ -1,0 +1,60 @@
+﻿@using www.pwa.Shared
+@inject IHttpClientFactory httpClient
+
+
+<div style="max-width: 900px;">
+    <span class="ml-2 oi oi-x text-danger pointer" @onclick="e => onCloseRequest.InvokeAsync()" style="right: 0px;"></span>
+    @if (walkPoint != null)
+    {
+
+        <div class="card">
+            <img class="card-img-top" src="@($"images/{walkPoint.Name.Replace(" ", "")}.jpg")" alt="@walkPoint.Name">
+            <small class="float-end">@walkPoint.ImageCopyRight</small>
+            <div class="card-body">
+                <h5 class="card-title">@walkPoint.Name</h5>
+                <p class="card-text">@walkPoint.LongDescription</p>
+            </div>
+            <div class="card-footer">
+                @walkPoint.Description
+            </div>
+        </div>
+    }
+    <div style="clear:both;">
+        @Info
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string Point { get; set; }
+
+    [Parameter]
+    public EventCallback onCloseRequest { get; set; }
+
+    WalkPoints walkPoint;
+    string Info = String.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        LoadData(Point);
+        return base.OnInitializedAsync();
+    }
+
+    public async Task LoadData(string point)
+    {
+        var Http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
+        try
+        {
+            walkPoint = await Http.GetFromJsonAsync<WalkPoints>($"WwwRun/info/{point}");
+            if (walkPoint == null)
+            {
+                Info = "Fehler beim laden der Daten.";
+            }
+        }
+        catch
+        {
+            Info = "Fehler beim laden der Daten.";
+        }
+        await InvokeAsync(() => StateHasChanged());
+    }
+}

@@ -19,7 +19,7 @@
                 <div class="col-sm-6 col-xl-3">
                     <InputSelect id="newschoolclass" class="form-control" @bind-Value="@sponsorRequest.Klasse">
                         <option value="">Alle</option>
-                        @foreach (string schoolclass in walk.Schools.First().SchoolClasses.Select(s => s.Name))
+                        @foreach (string schoolclass in walk.Schools.First().SchoolClasses.Select(s => s.Name).OrderBy(o => o))
                         {
                             <option value="@schoolclass">@schoolclass</option>
                         }

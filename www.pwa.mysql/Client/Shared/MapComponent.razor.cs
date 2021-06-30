@@ -45,11 +45,9 @@ namespace www.pwa.Client.Shared
 
         public void ShowCurrent(WwwFeedback feedback = null)
         {
-            (var next, var current) = Walk.GetNextAndCurrentPoint();
-            Walk.NextTarget = next.Name;
             List<double[]> line = new List<double[]>();
             line.AddRange(Walk.Points.Where(x => x.Distance < Walk.CurrentDistance).Select(s => new double[] { s.Latitude, s.Longitude }));
-            line.Add(new double[] { current.Latitude, current.Longitude });
+            line.Add(new double[] { Walk.CurrentPoint.Latitude, Walk.CurrentPoint.Longitude });
             _js.InvokeVoidAsync("AddCurrentLine", line, "purple");
             InvokeAsync(() => StateHasChanged());
         }

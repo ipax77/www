@@ -1,7 +1,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace www.pwa.Shared
 {
@@ -18,8 +20,15 @@ namespace www.pwa.Shared
         public List<WalkPoints> Points { get; set; }
         public double MaxSpeedInKmH { get; set; } = 40;
         public double MaxDuration { get; set;} = 2;
+        [NotMapped]
+        [JsonIgnore]
+        public WalkPoints NextPoint { get; set; }
+        [NotMapped]
+        [JsonIgnore]
+        public WalkPoints CurrentPoint { get; set; }
 
-        public (WalkPoints, WalkPoints) GetNextAndCurrentPoint()
+
+        public void SetNextAndCurrentPoint()
         {
             double addDistance = 0;
             NextTarget = String.Empty;
@@ -56,7 +65,8 @@ namespace www.pwa.Shared
                     Distance = currentDistance
                 };
             }
-            return (NextPoint, CurrentPoint);
+            this.NextPoint = NextPoint;
+            this.CurrentPoint = CurrentPoint;
         }
     }
 
@@ -78,5 +88,7 @@ namespace www.pwa.Shared
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public double Distance { get; set; }
+        public string LongDescription { get; set; }
+        public string ImageCopyRight { get; set; }
     }
 }

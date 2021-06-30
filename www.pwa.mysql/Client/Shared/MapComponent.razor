@@ -4,11 +4,7 @@
 <input type="number" @bind-value="CurrentDistance" />
 </div> *@
 
-<div>
-@if (Walk != null && !String.IsNullOrEmpty(Walk.NextTarget)) {
-    <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: @Walk.NextTarget</h4>
-}
-</div>
+
 <div class="mapcontainer" >
     <div id="mapid" class="w-100 h-100"></div>
 

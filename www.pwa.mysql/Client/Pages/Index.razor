@@ -12,30 +12,58 @@
         <img class="img-fluid" src="images/www_small.png" />
     </div>
     <div class="justify-content-center align-self-center">
-        @if (Walk != null) {
+        @if (Walk != null)
+        {
             <h3 class="text-white-50">@Walk.Name</h3>
         }
     </div>
 </div>
 
-@if (isLoading) {
+@if (isLoading)
+{
     <LoadingComponent></LoadingComponent>
 }
 
-@if (Walk != null) {
+@if (Walk != null)
+{
+
+    @if (!String.IsNullOrEmpty(Walk.NextTarget)) {
+        <div>
+        <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: 
+            <span class="pointer text-decoration-underline text-primary" @onclick="e => InfoShow(Walk.NextTarget)">@Walk.NextTarget</span></h4>
+        </div>
+    }
+
     <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
-    <h4 class="">Gesammelte Sponsorengelder: @SponsorMoney €</h4>
-    @if (Feedback != null) {
+    <div class="row">
+        <h4 class="">Gesammelte Sponsorengelder: @SponsorMoney €</h4>
+        <div class="col-2 form-group">
+            <label for="pointinfo" class="form-label mt-4">Ziele</label>
+            <select class="form-select" id="pointinfo" @onchange="InfoChanged">
+            @foreach (var point in Walk.Points)
+            {
+                <option value="@point.Name">@point.Name</option>
+            }
+            </select>
+        </div>
+    </div>
+    @if (Feedback != null)
+    {
         <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
-    }    
+    }
     <br />
+    @if (!String.IsNullOrEmpty(pointInfo))
+    {
+        <div>
+            <PointInfoComponent @ref="pointInfoComponent" Point="@pointInfo" onCloseRequest="InfoClose"></PointInfoComponent>
+        </div>
+    }
     <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
-    <RunFormComponent 
-        Walk="Walk" 
-        editContext="editContext" 
-        Run="Run" 
-        OnValidSubmit="HandleValidSubmit" 
-        OnInvalidSubmit="HandleInvalidSubmit">
+    <RunFormComponent Walk="Walk"
+                  editContext="editContext"
+                  Run="Run"
+                  OnValidSubmit="HandleValidSubmit"
+                  OnInvalidSubmit="HandleInvalidSubmit">
     </RunFormComponent>
     <br />
     <TableComponent @ref="tableComponent" walkGuid="@walkGuid"></TableComponent>
@@ -54,6 +82,9 @@
     TableComponent tableComponent;
     bool isLoading = false;
     double SponsorMoney = 0;
+    string pointInfo = String.Empty;
+    PointInfoComponent pointInfoComponent;
+
     protected override async Task OnInitializedAsync()
     {
         base.OnInitialized();
@@ -62,6 +93,7 @@
         Http = httpClient.CreateClient("www.pwa.ServerAPI.NoAuth");
         Walk = await Http.GetFromJsonAsync<WalkAppModel>($"WwwRun/walk/{walkGuid}",
              new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        Walk.SetNextAndCurrentPoint();
         Run.Walk = walkGuid;
         Run.School = Walk.Schools.First().Name;
         SponsorMoney = await Http.GetFromJsonAsync<double>($"WwwSponsor/{walkGuid}");
@@ -74,20 +106,26 @@
         isLoading = true;
         await InvokeAsync(() => StateHasChanged());
 
-        try {
+        try
+        {
             var response = await Http.PostAsJsonAsync<EntityRunFormData>("WwwRun", Run);
-            if (response.IsSuccessStatusCode) {
+            if (response.IsSuccessStatusCode)
+            {
                 var content = await response.Content.ReadAsStringAsync();
                 Feedback = JsonSerializer.Deserialize<WwwFeedback>(content
                     , new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            } else {
+            }
+            else
+            {
                 badgeClass = "badge bg-warning";
                 badgeInfo = $"Fehler beim übertragen der Daten. {response.StatusCode}";
                 Feedback = null;
                 StateHasChanged();
                 return;
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e)
+        {
             badgeClass = "badge bg-warning";
             badgeInfo = $"Fehler beim übertragen der Daten. {e.Message}";
             Feedback = null;
@@ -103,7 +141,8 @@
         }
         else
         {
-            if (!String.IsNullOrEmpty(Feedback.Error)) {
+            if (!String.IsNullOrEmpty(Feedback.Error))
+            {
                 badgeClass = "badge bg-warning";
                 badgeInfo = Feedback.Error;
                 Feedback = null;
@@ -126,7 +165,35 @@
     {
         // await _js.InvokeVoidAsync("Scroll", "runform");
     }
-    
+
+    private void InfoChanged(ChangeEventArgs e)
+    {
+        string point = e.Value.ToString();
+        InfoShow(point);
+    }
+
+    private async void InfoShow(string point)
+    {
+        pointInfo = point;
+        if (pointInfoComponent != null)
+            pointInfoComponent.LoadData(point);
+
+        var walkPoint = Walk.Points.FirstOrDefault(f => f.Name == point);
+        if (walkPoint != null)
+        {
+            await _js.InvokeVoidAsync("FlyTo", walkPoint.Latitude, walkPoint.Longitude, 11);
+        }
+
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private async void InfoClose()
+    {
+        pointInfo = String.Empty;
+        await _js.InvokeVoidAsync("FlyTo", 51.318008, 9.468067, 7);
+        InvokeAsync(() => StateHasChanged());
+    }
+
 }
 
-        
+

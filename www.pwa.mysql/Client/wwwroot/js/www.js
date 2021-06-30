@@ -1,7 +1,5 @@
 
 window.LoadMap = () => {
-  console.log("loading map..");
-
   window.map = L.map('mapid');
   window.map.on("load", loaded);
   window.map.setView([51.318008, 9.468067], 6);
@@ -11,7 +9,6 @@ window.LoadMap = () => {
   }).addTo(window.map);
 
   async function loaded() {
-    console.log("map loaded");
     await DotNet.invokeMethodAsync('www.pwa.Client', 'MapLoadedCaller');
   }
 
@@ -61,6 +58,11 @@ function markerIcon(instId) {
       // popupAnchor: [-3, -76],
   });
 };
+
+window.FlyTo = (latitude, longitude, zoom) => {
+    window.map.flyTo([latitude, longitude], zoom);
+};
+
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
