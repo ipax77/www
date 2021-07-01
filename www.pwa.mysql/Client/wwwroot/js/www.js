@@ -36,12 +36,28 @@ window.AddCurrentLine = (latlngs, mycolor) => {
   }
 };
 
-window.AddMarker = (latitude, longitude, accuracy, index) => {
-  var marker = new L.marker([latitude, longitude], {icon: markerIcon(index)});
-  marker.alt = index.toString();
-  marker.bindPopup(index + '|' + latitude + '|' + longitude + ' (' + accuracy + ')');
+window.ClearLines = () => {
+    for (i in window.map._layers) {
+        if (window.map._layers[i]._path != undefined) {
+            try {
+                window.map.removeLayer(window.map._layers[i]);
+            }
+            catch (e) {
+                console.log("problem with " + e + window.map._layers[i]);
+            }
+        }
+    }
+};
+
+window.AddMarker = (latitude, longitude, info) => {
+  var marker = new L.marker([latitude, longitude], {icon: markerIcon(0)});
+  marker.alt = info;
+  marker.bindPopup(info);
   marker.addTo(window.map);
-  
+
+  marker.on('click', function (event) {
+      DotNet.invokeMethodAsync('www.pwa.Client', 'PointClick', marker.alt);
+  });
   marker.on('mouseover', function(event){
       marker.openPopup();
   });
@@ -53,7 +69,7 @@ window.AddMarker = (latitude, longitude, accuracy, index) => {
 function markerIcon(instId) {
   return new L.icon({
       iconUrl: 'images/marker1-min.png',
-      iconSize: [35, 35]
+      iconSize: [15, 15]
       // iconAnchor: [22, 94],
       // popupAnchor: [-3, -76],
   });

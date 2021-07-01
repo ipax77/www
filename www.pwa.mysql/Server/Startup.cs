@@ -189,7 +189,8 @@ namespace www.pwa.Server
                             Position = 10,
                             Latitude = 33.5883,
                             Longitude = 73.0666,
-                            ImageCopyRight = "Bild: Naseerabbas, CC BY-SA 3.0 <https://creativecommons.org/licenses/by-sa/3.0> via Wikimedia Commons",
+                            ImageCopyRight = "Bild: Naseerabbas, CC BY-SA 3.0 <LINK> via Wikimedia Commons",
+                            ImageCopyRightLink = "https://creativecommons.org/licenses/by-sa/3.0",
                             LongDescription = "Der Distrikt Rāwalpindi befindet sich im äußersten Norden der Provinz Punjab, die sich im Westen von Pakistan befindet, und grenzt an die Hauptstadt Islamabad an. Flüsse, die durch das Gebiet fließen, sind der Indus und der Jhelum. Bei der Volkszählung 1901 durch die Briten hatte der Distrikt 558.699 Einwohner. Mit der Gründung von Islamabad als Hauptstadt Pakistans in unmittelbarer Nähe erlebte das Gebiet einen starken Aufschwung und Bevölkerungszuwachs. Der Distrikt zählt heute zu den am stärksten urbanisierten Regionen Pakistans."
                         },
                         new WwwWalkData() {

@@ -24,13 +24,18 @@ namespace www.pwa.Client.Shared
 
         [Parameter]
         public WalkAppModel Walk { get; set; }
+        
         private static Action action;
+        private static Action<string> clickaction;
         TextEncoderSettings encoderSettings;
+        PointInfoComponent pointInfoComponent;
+        string pointInfo = String.Empty;
 
         protected override void OnInitialized()
         {
             base.OnInitialized();
             action = MapLoaded;
+            clickaction = PointClicked;
             encoderSettings = new TextEncoderSettings();
             encoderSettings.AllowRange(UnicodeRanges.All);
         }
@@ -54,16 +59,56 @@ namespace www.pwa.Client.Shared
 
         private async void MapLoaded()
         {
-            if (Walk != null) {
+            if (Walk != null)
+            {
                 await _js.InvokeVoidAsync("AddLine", new List<double[]>(Walk.Points.Select(s => new double[] { s.Latitude, s.Longitude })), "blue");
                 ShowCurrent();
+                foreach (var point in Walk.Points)
+                {
+                    await _js.InvokeVoidAsync("AddMarker", point.Latitude, point.Longitude, point.Name);
+                }
             }
+        }
+
+        private async void PointClicked(string point)
+        {
+            var wPoint = Walk.Points.FirstOrDefault(f => f.Name == point);
+            pointInfo = point;
+            if (wPoint != null)
+            {
+                await _js.InvokeVoidAsync("ClearLines");
+                await _js.InvokeVoidAsync("FlyTo", wPoint.Latitude, wPoint.Longitude, 9);
+                if (pointInfoComponent != null)
+                {
+                    await pointInfoComponent.LoadData(point);
+                }
+            }
+            await InvokeAsync(() => StateHasChanged());
+        }
+
+        private void InfoShow(string point)
+        {
+            PointClicked(point);
+        }
+
+        private async void InfoClose()
+        {
+            pointInfo = String.Empty;
+            await _js.InvokeVoidAsync("AddLine", new List<double[]>(Walk.Points.Select(s => new double[] { s.Latitude, s.Longitude })), "blue");
+            ShowCurrent();
+            await InvokeAsync(() => StateHasChanged());
         }
 
         [JSInvokable]
         public static void MapLoadedCaller()
         {
             action.Invoke();
+        }
+
+        [JSInvokable]
+        public static void PointClick(string point)
+        {
+            clickaction.Invoke(point);
         }
     }
 }

@@ -26,18 +26,10 @@
 
 @if (Walk != null)
 {
-
-    @if (!String.IsNullOrEmpty(Walk.NextTarget)) {
-        <div>
-        <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: 
-            <span class="pointer text-decoration-underline text-primary" @onclick="e => InfoShow(Walk.NextTarget)">@Walk.NextTarget</span></h4>
-        </div>
-    }
-
     <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
     <div class="row">
-        <h4 class="">Gesammelte Sponsorengelder: @SponsorMoney €</h4>
-        <div class="col-2 form-group">
+        <h4 class="">Gesammelte Sponsorengelder: <span class="text-nowrap">@SponsorMoney €</span></h4>
+@*        <div class="col-2 form-group">
             <label for="pointinfo" class="form-label mt-4">Ziele</label>
             <select class="form-select" id="pointinfo" @onchange="InfoChanged">
             @foreach (var point in Walk.Points)
@@ -45,19 +37,13 @@
                 <option value="@point.Name">@point.Name</option>
             }
             </select>
-        </div>
+        </div>*@
     </div>
     @if (Feedback != null)
     {
         <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
     }
     <br />
-    @if (!String.IsNullOrEmpty(pointInfo))
-    {
-        <div>
-            <PointInfoComponent @ref="pointInfoComponent" Point="@pointInfo" onCloseRequest="InfoClose"></PointInfoComponent>
-        </div>
-    }
     <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
     <RunFormComponent Walk="Walk"
                   editContext="editContext"
@@ -165,35 +151,6 @@
     {
         // await _js.InvokeVoidAsync("Scroll", "runform");
     }
-
-    private void InfoChanged(ChangeEventArgs e)
-    {
-        string point = e.Value.ToString();
-        InfoShow(point);
-    }
-
-    private async void InfoShow(string point)
-    {
-        pointInfo = point;
-        if (pointInfoComponent != null)
-            pointInfoComponent.LoadData(point);
-
-        var walkPoint = Walk.Points.FirstOrDefault(f => f.Name == point);
-        if (walkPoint != null)
-        {
-            await _js.InvokeVoidAsync("FlyTo", walkPoint.Latitude, walkPoint.Longitude, 11);
-        }
-
-        InvokeAsync(() => StateHasChanged());
-    }
-
-    private async void InfoClose()
-    {
-        pointInfo = String.Empty;
-        await _js.InvokeVoidAsync("FlyTo", 51.318008, 9.468067, 7);
-        InvokeAsync(() => StateHasChanged());
-    }
-
 }
 
 

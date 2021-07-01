@@ -211,7 +211,8 @@ namespace www.pwa.Server.Controllers
                 Longitude = dbpoint.Longitude,
                 Distance = dbpoint.Distance,
                 LongDescription = dbpoint.LongDescription,
-                ImageCopyRight = dbpoint.ImageCopyRight
+                ImageCopyRight = dbpoint.ImageCopyRight,
+                ImageCopyRightLink = dbpoint.ImageCopyRightLink
             };
         }
     }

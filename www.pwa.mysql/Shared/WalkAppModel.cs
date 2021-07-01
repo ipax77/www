@@ -90,5 +90,6 @@ namespace www.pwa.Shared
         public double Distance { get; set; }
         public string LongDescription { get; set; }
         public string ImageCopyRight { get; set; }
+        public string ImageCopyRightLink { get; set; }
     }
 }

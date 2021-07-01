@@ -16,5 +16,6 @@ namespace www.pwa.Server.Models
         public int Position { get; set; }
         public double Distance { get; set; }
         public string ImageCopyRight { get; set; } = "Bild: Pixabay";
+        public string ImageCopyRightLink { get; set; }
     }
 }

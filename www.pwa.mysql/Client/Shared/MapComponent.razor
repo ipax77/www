@@ -4,12 +4,22 @@
 <input type="number" @bind-value="CurrentDistance" />
 </div> *@
 
-
+@if (!String.IsNullOrEmpty(Walk.NextTarget)) {
+    <div>
+    <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: 
+        <span class="pointer text-decoration-underline text-primary" @onclick="e => InfoShow(Walk.NextTarget)">@Walk.NextTarget</span></h4>
+    </div>
+}
 <div class="mapcontainer" >
     <div id="mapid" class="w-100 h-100"></div>
 
 </div>
-
+@if (!String.IsNullOrEmpty(pointInfo))
+{
+    <div>
+        <PointInfoComponent @ref="pointInfoComponent" Point="@pointInfo" onCloseRequest="InfoClose"></PointInfoComponent>
+    </div>
+}
 @* Geretsried: 47.8583, 11.478
 Graz || Österreich: 46.995, 15.469
 Novi Sad | Нови Сад | Serbien: 45.2995,19.8653
