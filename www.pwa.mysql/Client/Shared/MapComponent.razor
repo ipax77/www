@@ -1,12 +1,7 @@
 
-@* <div>
-<button type="button" class="btn btn-primary" @onclick="ShowCurrent">Show Current Line</button>
-<input type="number" @bind-value="CurrentDistance" />
-</div> *@
-
 @if (!String.IsNullOrEmpty(Walk.NextTarget)) {
     <div>
-    <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Walk.TotalDistance km zurückgelegt. Nächstes Ziel: 
+    <h4 class="text-white-50">Es wurden @Math.Round(Walk.CurrentDistance, 2) von @Math.Round(Walk.TotalDistance, 2) km zurückgelegt. Nächstes Ziel: 
         <span class="pointer text-decoration-underline text-primary" @onclick="e => InfoShow(Walk.NextTarget)">@Walk.NextTarget</span></h4>
     </div>
 }
@@ -20,15 +15,3 @@
         <PointInfoComponent @ref="pointInfoComponent" Point="@pointInfo" onCloseRequest="InfoClose"></PointInfoComponent>
     </div>
 }
-@* Geretsried: 47.8583, 11.478
-Graz || Österreich: 46.995, 15.469
-Novi Sad | Нови Сад | Serbien: 45.2995,19.8653
-Plovdiv | Пловдив | Bulgarien: 42.2097, 24.7302
-Istanbul: 40.955, 29.048
-Ankara | Türkei: 40.0097, 32.8931
-Teheran | تهران | Iran: 35.648, 51.405
-Aşgabat | Turkmenistan: 37.9269, 58.4061
-Duschanbe | Душанбе | Tajikistan: 38.5589, 68.784
-Rawalpindi | راولپنڈی‎ | Pakistan: 33.5883, 73.0666
-Neu-Delhi | नई दिल्ली  |Indien: 28.6014, 77.2408
-Lophelling Schule | Lophelling Boarding School | Nepal: 28.3014, 83.7835 *@

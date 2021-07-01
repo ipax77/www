@@ -6,7 +6,7 @@
     max-height: 523.26px;;
 }
 
-@media only screen and (max-width: 641px) {
+@media only screen and (max-width: 1000px) {
     .mapcontainer {
         width: 90vw;
         height: calc(90vw / 1.72);

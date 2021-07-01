@@ -1,6 +1,8 @@
 
 window.LoadMap = () => {
-  window.map = L.map('mapid');
+    window.map = L.map('mapid', {
+        maxBoundsViscosity: 1.0
+    });
   window.map.on("load", loaded);
   window.map.setView([51.318008, 9.468067], 6);
 
@@ -30,7 +32,7 @@ window.AddLine = (latlngs, mycolor) => {
 
 window.AddCurrentLine = (latlngs, mycolor) => {
   try {
-    L.polyline(latlngs, {color: mycolor}).addTo(window.map);
+      L.polyline(latlngs, { color: mycolor }).addTo(window.map);
   } catch (error) {
     console.error(error);
   }
@@ -68,10 +70,10 @@ window.AddMarker = (latitude, longitude, info) => {
 
 function markerIcon(instId) {
   return new L.icon({
-      iconUrl: 'images/marker1-min.png',
-      iconSize: [15, 15]
-      // iconAnchor: [22, 94],
-      // popupAnchor: [-3, -76],
+      iconUrl: 'images/marker-min.png',
+      iconSize: [25, 40.5],
+      iconAnchor: [12.5, 40.5],
+      popupAnchor: [0, -40,5],
   });
 };
 

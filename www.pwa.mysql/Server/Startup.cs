@@ -117,7 +117,9 @@ namespace www.pwa.Server
                             Description = "Start",
                             Position = 1,
                             Latitude = 47.8583,
-                            Longitude = 11.478
+                            Longitude = 11.478,
+                            ImageCopyRight = "Bild: GymGer",
+                            LongDescription = "Das Gymnasium Geretsried ist ein Naturwissenschaftlich-technologisches und Sprachliches Gymnasium. Besonderheit: Mit der Wahl der 2.Fremdsprache(Latein, Französisch) ist die Ausbildungsrichtung noch nicht festgelegt. Im Sprachlichen Gymnasium sind drei moderne Fremdsprachen möglich(Englisch, Französisch, Spanisch)."
                         },
                         new WwwWalkData() {
                             Name = "Graz",
@@ -155,8 +157,8 @@ namespace www.pwa.Server
                             Name = "Ankara",
                             Description = "Türkei",
                             Position = 6,
-                            Latitude = 41.0097,
-                            Longitude = 32.8931,
+                            Latitude = 39.95165524923777,
+                            Longitude = 32.841101549499875,
                             LongDescription = "Das Mausoleum Atatürks ist die wohl bekannteste Sehenswürdigkeit Ankaras. Es befindet sich auf dem Hügel Rasattepe, der im 12. Jahrhundert vor Christus von den Phrygern, die in Anatolien ein großes Reich hatten, als Grabhügel errichtet wurde. Im Anıtkabir ruht der Staatsgründer der Türkei, Mustafa Kemal Atatürk. Das Anıtkabir wird für türkische Staatsakte genutzt und sowohl von Touristen als auch von Einheimischen gern besucht. Neben dem Mausoleum kann man auf dem Gelände unter anderem ein Museum und den Friedenspark besuchen. Im Museumsbereich sind private Gegenstände Atatürks zu besichtigen, darunter Säbel und Gewehre, aber auch Gemälde und die private Bibliothek des ehemaligen türkischen Präsidenten. Im Friedenspark gibt es Bäume aus 24 Nationen und verschiedene weitere Gewächse zu sehen."
                         },
                         new WwwWalkData() {
