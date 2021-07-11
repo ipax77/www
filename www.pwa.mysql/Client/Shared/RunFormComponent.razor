@@ -49,7 +49,7 @@
             <div class="col-sm-6 col-xl-3">
                 <InputSelect id="newschoolclass" class="form-control" @bind-Value="@Run.SchoolClass">
                     <option value="">Wähle die Klasse ...</option>
-                    @foreach (string schoolclass in Walk.Schools.First(f => f.Name == Run.School).SchoolClasses.Select(s => s.Name).OrderBy(o => o))
+                    @foreach (string schoolclass in Walk.Schools.First(f => f.Name == Run.School).SchoolClasses.Select(s => s.Name))
                     {
                         <option value="@schoolclass">@schoolclass</option>
                     }

@@ -97,6 +97,9 @@ namespace www.pwa.Server
 
             CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"], Configuration["Auth:Admin2"], Configuration["Auth:Credential2"]);
             
+            var classes = context.wwwClasses.Select(s => new SchoolClass() { Name = s.Name });
+            Extensions.SortClasses(classes.ToList());
+
             if (!context.wwwWalks.Any()) {
                 WwwWalk nepalWalk = new WwwWalk() {
                     Name = "Sponsorenlauf für Nepal",

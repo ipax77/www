@@ -61,10 +61,10 @@ namespace www.pwa.Server.Controllers
                 Schools = new List<School>(walk.WwwSchools.Select(t => new School()
                 {
                     Name = t.Name,
-                    SchoolClasses = new List<SchoolClass>(t.WwwClasses.Select(u => new SchoolClass()
+                    SchoolClasses = Extensions.SortClasses(new List<SchoolClass>(t.WwwClasses.Select(u => new SchoolClass()
                     {
                         Name = u.Name
-                    }))
+                    })))
                 })),
                 Points = new List<WalkPoints>(walk.Points.OrderBy(o => o.Position).Select(s => new WalkPoints()
                 {
@@ -75,6 +75,7 @@ namespace www.pwa.Server.Controllers
                     Distance = s.Distance
                 }))
             };
+            
             return walkModel;
         }
 
