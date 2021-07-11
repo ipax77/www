@@ -44,8 +44,11 @@ namespace www.pwa.Server
             services.AddDbContext<ApplicationDbContext>(options =>
                 options
                 .UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new System.Version(5, 7, 34)),
-                x => x.EnableRetryOnFailure()
-            ));
+                x =>
+                {
+                    x.EnableRetryOnFailure();
+                    x.UseQuerySplittingBehavior(QuerySplittingBehavior.SingleQuery);
+                }));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

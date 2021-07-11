@@ -3,7 +3,7 @@
 
 <div class="mt-1">
     
-    <EditForm id="runform" EditContext="editContext" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="OnInvalidSubmit">
+    <EditForm id="runform" EditContext="editContext" OnValidSubmit="OnValidSubmit" OnInvalidSubmit="ValidSubmit">
         <DataAnnotationsValidator />
         <ValidationSummary />
         <div class="form-group row justify-content-start mb-1">
@@ -103,5 +103,11 @@
 
     [Parameter]
     public EventCallback OnInvalidSubmit { get; set; }
+
+    void ValidSubmit()
+    {
+        Run.Credential = String.Empty;
+        OnValidSubmit.InvokeAsync();
+    }
 
 }
