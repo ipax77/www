@@ -18,10 +18,10 @@ namespace www.pwa.Server
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                // .ConfigureAppConfiguration((hostingContext, config) =>
-                // {
-                //     config.AddJsonFile(workdir + "/wwwpwaconfig.json", optional: false, reloadOnChange: false);
-                // })
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("/data/wwwpwaconfig.json", optional: false, reloadOnChange: false);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

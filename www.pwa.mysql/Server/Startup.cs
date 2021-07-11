@@ -232,7 +232,7 @@ namespace www.pwa.Server
             }
             
             // string basePath = Environment.GetEnvironmentVariable("ASPNETCORE_BASEPATH");
-            string basePath = "/www";
+            string basePath = "/worldwidewalk";
             if (!string.IsNullOrEmpty(basePath))
             {
                 app.Use((context, next) =>
