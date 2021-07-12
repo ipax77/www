@@ -153,8 +153,11 @@
                 FeedbackBackground = "bg-success";
                 sponsorModel.Credential = String.Empty;
             } else {
+                Console.WriteLine($"status code: {response.StatusCode}");
                 if (response.StatusCode == System.Net.HttpStatusCode.BadRequest) {
                     Feedback = "Das Pseudonym ist schon in einer anderen Klasse vergeben.";
+                } else if (response.StatusCode == System.Net.HttpStatusCode.Forbidden) {
+                    Feedback = "Falsches Passwort.";
                 } else {
                     Feedback = "Fehler beim übertragen der Daten. Bitte versuche es später noch einmal.";
                 }

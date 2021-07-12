@@ -74,6 +74,11 @@ namespace www.pwa.Server.Controllers
             if (walk == null)
                 return NotFound();
 
+            if (sponsoresModel.Credential != walk.Credential)
+            {
+                return Forbid();
+            }
+
             WwwSchool school = walk.WwwSchools.FirstOrDefault(f => f.Name == sponsoresModel.School);
             WwwClass schoolClass = school.WwwClasses.FirstOrDefault(f => f.Name == sponsoresModel.SchoolClass);
             // WwwEntity entity = schoolClass.WwwEntities.FirstOrDefault(f => f.Pseudonym == sponsoresModel.EntityName);
