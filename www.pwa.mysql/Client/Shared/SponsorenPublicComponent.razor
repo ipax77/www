@@ -1,0 +1,166 @@
+﻿@using System.Threading
+@using www.pwa.Shared
+@inject HttpClient Http
+
+<style>
+    .tableFixHead          { overflow-y: auto; height: 750px; }
+    .tableFixHead thead th { position: sticky; top: 0; }
+
+    table  { border-collapse: collapse; width: 100%; }
+    th, td { padding: 8px 16px; white-space: nowrap; }
+    th     { background: purple; }
+</style>
+
+<div>
+    <div class="form-group form-group row justify-content-start mb-1">
+        <div class="col-sm-3 col-xl-2">
+            <input type="text" placeholder="Suche" @bind-value="searchString" @oninput="Search" />
+        </div>
+        <div class="col-auto">
+            <span class="oi oi-x text-danger pointer" @onclick="Clear"></span>
+        </div>
+    </div>   
+</div>
+<div class="tableFixHead" style="max-width: 600px; height: 80vh;">
+    <table class="table table-triped table-hover">
+        <thead>
+            <tr>
+                <th @onclick="@(() => SortEnt("Pseudonym"))" class="table-primary" style="cursor: pointer; text-decoration: underline;">Pseudonym</th>
+                <th @onclick="@(() => SortEnt("Strecke"))" class="table-primary" style="cursor: pointer; text-decoration: underline;">Strecke</th>
+            </tr>
+        </thead>
+        <tbody>
+            <Virtualize @ref="virtualTable" Context="ent" ItemsProvider="LoadEnt" ItemSize="40" OverscanCount="10">
+                <ItemContent>
+                    <tr class="pointer" @onclick="@(() => ShowSponsors(ent.Pseudonym))">
+                        <td>@ent.Pseudonym</td>
+                        <td>@ent.Distance.ToString("N2") km</td>
+                    </tr>
+                </ItemContent>
+                <Placeholder>
+                    <tr><td style="height: 40px;">Loading ...</td></tr>
+                </Placeholder>    
+            </Virtualize>
+        </tbody>
+    </table>
+</div>
+
+<SponsorenPopupComponent @ref="popup"></SponsorenPopupComponent>
+
+@code {
+    private FinalSponsorRequest Request;
+    private int entCount;
+    private List<FinalSponsorResponse> Responses;
+    Virtualize<FinalSponsorResponse> virtualTable;
+    string searchString = String.Empty;
+    SponsorenPopupComponent popup;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Request = new FinalSponsorRequest()
+        {
+            Skip = 0,
+            Take = 100
+        };
+        await Reload();
+    }
+
+    private async Task Reload()
+    {
+        entCount = await GetCount();
+        await virtualTable.RefreshDataAsync();
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    private async void Search(ChangeEventArgs e)
+    {
+        Request.Search = e.Value.ToString();
+        await Reload();
+    }
+
+    private async void Clear()
+    {
+        searchString = String.Empty;
+        Request.Search = String.Empty;
+        Request.Interest = String.Empty;
+        await Reload();
+    }
+
+    private async void SortEnt(string Name)
+    {
+        if (Request.Interest == Name)
+            Request.Order = !Request.Order;
+        else
+        {
+            Request.Interest = Name;
+            Request.Order = true;
+        }
+        await virtualTable.RefreshDataAsync();
+        StateHasChanged();
+    }   
+
+    private async void ShowSponsors(string pseudonym)
+    {
+        List<FinalSponsorInfoResponse> sponsors = new List<FinalSponsorInfoResponse>();
+        try
+        {
+            sponsors = await Http.GetFromJsonAsync<List<FinalSponsorInfoResponse>>($"WwwSponsor/sponsorinfo/{pseudonym}");
+        } catch {}
+
+        if (sponsors != null && sponsors.Any())
+        {
+            var ent = Responses.FirstOrDefault(f => f.Pseudonym == pseudonym);
+            if (ent != null)
+            {
+                popup.Show(sponsors, ent.Pseudonym, ent.Distance);
+            }
+        }
+    }
+
+    private async Task<int> GetCount()
+    {
+        var response = await Http.PostAsJsonAsync<FinalSponsorRequest>("WwwSponsor/count", Request);
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<int>();
+        }
+        else
+            return 0;
+    }
+
+    private async ValueTask<ItemsProviderResult<FinalSponsorResponse>> LoadEnt(
+        ItemsProviderRequest request)
+    {
+        Request.Skip = request.StartIndex;
+        Request.Take = Math.Min(request.Count, entCount - request.StartIndex);
+
+        if (Request.Take == 0)
+            Responses = new List<FinalSponsorResponse>();
+        else
+            if (!request.CancellationToken.IsCancellationRequested)
+            Responses = await GetEnts(request.CancellationToken);
+        return new ItemsProviderResult<FinalSponsorResponse>(Responses, entCount);
+    }
+
+    private async Task<List<FinalSponsorResponse>> GetEnts(CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                var response = await Http.PostAsJsonAsync<FinalSponsorRequest>("WwwSponsor/entlist", Request, cancellationToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    return await response.Content.ReadFromJsonAsync<List<FinalSponsorResponse>>();
+                }
+                else
+                    return new List<FinalSponsorResponse>();
+            }
+        }
+        catch (Exception e)
+        {
+        }
+        return new List<FinalSponsorResponse>();
+    }
+
+}

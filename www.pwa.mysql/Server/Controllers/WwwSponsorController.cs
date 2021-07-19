@@ -12,6 +12,7 @@ using www.pwa.Server.Filters;
 using www.pwa.Server.Services;
 using www.pwa.Shared;
 using www.pwa.Server.Models;
+using System.Threading;
 
 namespace www.pwa.Server.Controllers
 {
@@ -128,6 +129,87 @@ namespace www.pwa.Server.Controllers
 
 
             return Ok();
+        }
+
+        [HttpPost]
+        [Route("entlist")]
+        public async Task<ActionResult<IEnumerable<FinalSponsorResponse>>> GetSponsorListAsync(FinalSponsorRequest sponsorRequest, CancellationToken cancellationToken)
+        {
+            var ents = context.wwwEntities
+                .AsNoTracking();
+
+            if (!String.IsNullOrEmpty(sponsorRequest.Search))
+            {
+                ents = ents.Where(x => x.Pseudonym.Contains(sponsorRequest.Search));
+            }
+
+            if (!String.IsNullOrEmpty(sponsorRequest.Interest))
+            {
+                if (sponsorRequest.Interest == "Pseudonym")
+                    if (sponsorRequest.Order)
+                        ents = ents.OrderByDescending(o => o.Pseudonym);
+                    else
+                        ents = ents.OrderBy(o => o.Pseudonym);
+                else if (sponsorRequest.Interest == "Strecke")
+                    if (sponsorRequest.Order)
+                        ents = ents.OrderByDescending(o => o.TotalRuns);
+                    else
+                        ents = ents.OrderBy(o => o.TotalRuns);
+            }
+            else
+                ents = ents.OrderBy(o => o.ID);
+
+            ents = ents.Skip(sponsorRequest.Skip).Take(sponsorRequest.Take);
+            List<FinalSponsorResponse> lsponsors = new List<FinalSponsorResponse>();
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    lsponsors = await ents.Select(s => new FinalSponsorResponse()
+                    {
+                        Pseudonym = s.Pseudonym,
+                        Distance = s.TotalRuns
+                    })
+                    .ToListAsync(cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    return lsponsors;
+                }
+            }
+            return lsponsors;
+        }
+
+
+        [HttpPost]
+        [Route("count")]
+        public async Task<int> GetSponsorCountAsync(SponsorRequest sponsorRequest)
+        {
+            var ents = context.wwwEntities.AsNoTracking();
+
+            if (!String.IsNullOrEmpty(sponsorRequest.Search))
+            {
+                ents = ents.Where(x => x.Pseudonym.Contains(sponsorRequest.Search));
+            }
+            return await ents.CountAsync();
+        }
+
+        [HttpGet]
+        [Route("sponsorinfo/{pseudonym}")]
+        public async Task<ActionResult<List<FinalSponsorInfoResponse>>> GetSponsorInfo(string pseudonym)
+        {
+            var ent = await context.wwwEntities
+                .Include(i => i.Sponsors)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(f => f.Pseudonym == pseudonym);
+            if (ent == null || !ent.Sponsors.Any())
+                return NotFound();
+
+            return ent.Sponsors.Select(s => new FinalSponsorInfoResponse()
+            {
+                Sponsor = s.Name,
+                CentPerKm = s.CentPerKm
+            }).ToList();
         }
     }
 }

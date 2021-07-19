@@ -452,7 +452,7 @@ namespace www.pwa.Server.Services
             return info;
         }
 
-        public async void SeedSponsors(ApplicationDbContext context) {
+        public async Task SeedSponsors(ApplicationDbContext context) {
             Random random = new Random();
             WwwWalk walk = context.wwwWalks.First();
             WwwSchool school = context.wwwSchools.Include(i => i.WwwClasses).First();
@@ -473,16 +473,18 @@ namespace www.pwa.Server.Services
                     var feedback = await Submit(context, data);
                     if (feedback != null && !String.IsNullOrEmpty(feedback.Error)) {
                         logger.LogWarning(feedback.Error);
-                        return;
+                        // return;
                     }
                 }
             }
+            context.SaveChanges();
             foreach (var ent in context.wwwEntities.Include(i => i.Sponsors)) {
                 for (int i = 0; i < random.Next(2, 4); i++) {
                     EntitySponsor sp = new EntitySponsor() {
                         Name = RandomString(5, random),
                         CentPerKm = random.Next(1, 101),
-                        Verified = true
+                        Verified = true,
+                        Entity = ent
                     };
                     ent.Sponsors.Add(sp);
                 }

@@ -93,10 +93,11 @@ namespace www.pwa.Server
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
             
             context.Database.Migrate();
-            // dbService.SeedSponsors(context);
 
             CreateRoles(serviceProvider, Configuration["Auth:Admin"], Configuration["Auth:Credential"], Configuration["Auth:Admin2"], Configuration["Auth:Credential2"]);
-            
+
+            // dbService.SeedSponsors(context).GetAwaiter().GetResult();
+
             var classes = context.wwwClasses.Select(s => new SchoolClass() { Name = s.Name });
             Extensions.SortClasses(classes.ToList());
 

@@ -1,0 +1,149 @@
+﻿@using www.pwa.Shared
+
+<style>
+    .fadein {
+        animation-name: fademein;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+
+    .fadeout {
+        animation-name: fademeout;
+        animation-duration: 0.5s;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+
+    @@keyframes fademein {
+        0% {
+            transform: scale(0.25);
+            opacity: 0
+        }
+
+        50% {
+            transform: scale(0.5);
+            opacity: 0.5
+        }
+
+        100% {
+            transform: scale(1.0);
+            opacity: 1
+        }
+    }
+
+    @@keyframes fademeout {
+        0% {
+            transform: scale(1.0);
+            opacity: 1
+        }
+
+        50% {
+            transform: scale(0.5);
+            opacity: 0.5
+        }
+
+        100% {
+            transform: scale(0);
+            opacity: 0
+        }
+    }
+</style>
+@if (_Show)
+{
+    <div class="modal fade show d-block @FadeClass" id="UnitInfo" @onclick="@( () => Close())">
+        <div class="modal-dialog">
+            <div class="modal-content" @onclick:stopPropagation>
+                <div class="modal-header bg-primary">
+                    <h4 class="text-warning">@Pseudonym - Strecke: @Distance.ToString("N2") km</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Sponsor</th>
+                                <th>Cent pro km</th>
+                                <th>Spende</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sponsor in Sponsors)
+                            {
+                                <tr>
+                                    <td>@sponsor.Sponsor</td>
+                                    <td>@sponsor.CentPerKm.ToString("N2")</td>
+                                    <td>@((Distance * sponsor.CentPerKm).ToString("N2")) €</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <div>
+                        <h5><strong>Herzlichen Glückwunsch und vielen Dank allen Teilnehmerinnen und Teilnehmern!</strong></h5>
+                        <p>Damit die Spenden nun in Nepal ankommen, ist Folgendes zu tun:</p>
+                        <p>Im Menüpunkt „Sponsoren“ findet man alle Pseudonyme und die jeweils erlaufenen Kilometer. Klickt man sein eigenes Pseudonym an, werden alle zugehörigen Sponsoren mit den Spenden-Beträgen aufgelistet. </p>
+
+                        <p>Diese Beträge bitte <strong>bei Frau Steer in der Schulbibliothek abgeben (Montag, 26.7., und Mittwoch, 28.7.)</strong> bzw. überweisen, falls eine Spendenquittung gewünscht wird:</p>
+
+                        <div class="border">
+                        <p><strong>Nepal Initiative Schongau e. V.</strong></p>
+                        <p><strong>IBAN: DE96 7205 0000 0251 5594 23</strong></p>
+                        <p>BIC: AUGSDE77XXX</p>
+                        <p>Stadtsparkasse Augsburg</p>
+                        <p>Betreff (ohne Spendenquittung):</p>
+                        <p><strong>Sponsorenlauf GymGer – Pseudonym – Sponsor Familienname Vorname</strong></p>
+                        <p>Betreff (mit Spendenquittung, ab 100 € möglich):</p>
+                        <p><strong>Sponsorenlauf GymGer – Pseudonym – Sponsor Familienname Vorname vollstaendige Postanschrift</strong></p>
+                        </div>
+                        <i>Hinweis: Bei kleineren Beträgen kann der Überweisungsbeleg direkt als Quittung verwendet werden.</i>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    Wir wünschen allen schöne Sommerferien!<br>Bleibt fit und gesund :)
+                    <div class="btn-group" role="group" aria-label="DialogEndButtons">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" @onclick="@(() => Close())">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+
+}
+
+@code {
+    private List<FinalSponsorInfoResponse> Sponsors = new List<FinalSponsorInfoResponse>();
+    private string Pseudonym = String.Empty;
+    private double Distance = 0;
+    private Boolean _Show { get; set; } = false;
+    private string FadeClass = "fadein";
+
+    public async void Show(List<FinalSponsorInfoResponse> sponsors, string pseudonym, double distance)
+    {
+        if (_Show == false)
+        {
+            Sponsors = sponsors;
+            Pseudonym = pseudonym;
+            Distance = distance;
+            FadeClass = "fadein";
+        }
+        else
+        {
+            FadeClass = "fadeout";
+            await Task.Delay(500);
+        }
+        _Show = !_Show;
+        await InvokeAsync(() => StateHasChanged());
+        await Task.Delay(500);
+        FadeClass = "";
+        await InvokeAsync(() => StateHasChanged());
+    }
+
+    async void Close()
+    {
+        _Show = false;
+        await InvokeAsync(() => StateHasChanged());
+        await Task.Delay(500);
+        FadeClass = "";
+        await InvokeAsync(() => StateHasChanged());
+    }
+}
