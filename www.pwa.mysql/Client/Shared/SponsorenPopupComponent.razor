@@ -72,7 +72,7 @@
                                 <tr>
                                     <td>@sponsor.Sponsor</td>
                                     <td>@sponsor.CentPerKm.ToString("N2")</td>
-                                    <td>@((Distance * sponsor.CentPerKm).ToString("N2")) €</td>
+                                    <td style="text-align: right;">@((Distance * sponsor.CentPerKm / 100).ToString("N2")) €</td>
                                 </tr>
                             }
                         </tbody>
