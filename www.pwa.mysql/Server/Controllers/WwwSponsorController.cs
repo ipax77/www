@@ -157,7 +157,7 @@ namespace www.pwa.Server.Controllers
                         ents = ents.OrderBy(o => o.TotalRuns);
             }
             else
-                ents = ents.OrderBy(o => o.ID);
+                ents = ents.OrderBy(o => o.Pseudonym);
 
             ents = ents.Skip(sponsorRequest.Skip).Take(sponsorRequest.Take);
             List<FinalSponsorResponse> lsponsors = new List<FinalSponsorResponse>();
