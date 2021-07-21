@@ -1,6 +1,6 @@
 ﻿@using System.Threading
 @using www.pwa.Shared
-@inject HttpClient Http
+@inject IHttpClientFactory clientFactory
 
 <style>
     .tableFixHead          { overflow-y: auto; height: 750px; }
@@ -54,9 +54,11 @@
     Virtualize<FinalSponsorResponse> virtualTable;
     string searchString = String.Empty;
     SponsorenPopupComponent popup;
+    HttpClient Http;
 
     protected override async Task OnInitializedAsync()
     {
+        Http = clientFactory.CreateClient("www.pwa.ServerAPI.NoAuth");
         Request = new FinalSponsorRequest()
         {
             Skip = 0,
