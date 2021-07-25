@@ -44,13 +44,37 @@
         <FeedbackComponent Feedback="Feedback"></FeedbackComponent>
     }
     <br />
-    <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
+
+    <div>
+        <h5><strong>Herzlichen Glückwunsch und vielen Dank allen Teilnehmerinnen und Teilnehmern!</strong></h5>
+        <p>Damit die Spenden nun in Nepal ankommen, ist Folgendes zu tun:</p>
+        <p>Im Menüpunkt <a href="sponsoreninfo">„Sponsoreninfo“</a> findet man alle Pseudonyme und die jeweils erlaufenen Kilometer. Klickt man sein eigenes Pseudonym an, werden alle zugehörigen Sponsoren mit den Spenden-Beträgen aufgelistet. </p>
+        
+        <p>Diese Beträge bitte <strong>bei Frau Steer in der Schulbibliothek abgeben (Montag, 26.7., und Mittwoch, 28.7.)</strong> bzw. überweisen, falls eine Spendenquittung gewünscht wird:</p>
+        <div class="border" style="max-width: 600px;">
+        <p><strong>Nepal Initiative Schongau e. V.</strong></p>
+        <p><strong>IBAN: DE96 7205 0000 0251 5594 23</strong></p>
+        <p>BIC: AUGSDE77XXX</p>
+        <p>Stadtsparkasse Augsburg</p>
+        <p>Betreff (ohne Spendenquittung):</p>
+        <p><strong>Sponsorenlauf GymGer – Pseudonym – Sponsor Familienname Vorname</strong></p>
+        <p>Betreff (mit Spendenquittung, ab 100 € möglich):</p>
+        <p><strong>Sponsorenlauf GymGer – Pseudonym – Sponsor Familienname Vorname vollstaendige Postanschrift</strong></p>
+        </div>
+        <p><i>Hinweis: Bei kleineren Beträgen kann der Überweisungsbeleg direkt als Quittung verwendet werden.</i></p>
+        <br>
+        <h5>Vielen Dank an alle Sponsoren die das <a href="https://gymger.de/sponsorenlauf-2021/">Projekt</a> unterstützen!</h5>
+        <p>Wir wünschen allen schöne Sommerferien!</p>
+        <p>Bleibt fit und gesund :)</p>
+    </div>
+
+    @* <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
     <RunFormComponent Walk="Walk"
                   editContext="editContext"
                   Run="Run"
                   OnValidSubmit="HandleValidSubmit"
                   OnInvalidSubmit="HandleInvalidSubmit">
-    </RunFormComponent>
+    </RunFormComponent> *@
     <br />
     <TableComponent @ref="tableComponent" walkGuid="@walkGuid"></TableComponent>
 }
