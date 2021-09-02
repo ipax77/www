@@ -28,7 +28,7 @@
 {
     <MapComponent @ref="mapComponent" Walk="Walk"></MapComponent>
     <div class="row">
-        <h4 class="">Gesammelte Sponsorengelder: <span class="text-nowrap">@SponsorMoney €</span></h4>
+        @* <h4 class="">Gesammelte Sponsorengelder: <span class="text-nowrap">@SponsorMoney €</span></h4> *@
 @*        <div class="col-2 form-group">
             <label for="pointinfo" class="form-label mt-4">Ziele</label>
             <select class="form-select" id="pointinfo" @onchange="InfoChanged">
@@ -45,7 +45,7 @@
     }
     <br />
 
-    <div>
+    @* <div>
         <h5><strong>Herzlichen Glückwunsch und vielen Dank allen Teilnehmerinnen und Teilnehmern!</strong></h5>
         <p>Damit die Spenden nun in Nepal ankommen, ist Folgendes zu tun:</p>
         <p>Im Menüpunkt <a href="sponsoreninfo">„Sponsoreninfo“</a> findet man alle Pseudonyme und die jeweils erlaufenen Kilometer. Klickt man sein eigenes Pseudonym an, werden alle zugehörigen Sponsoren mit den Spenden-Beträgen aufgelistet. </p>
@@ -66,15 +66,15 @@
         <h5>Vielen Dank an alle Sponsoren die das <a href="https://gymger.de/sponsorenlauf-2021/">Projekt</a> unterstützen!</h5>
         <p>Wir wünschen allen schöne Sommerferien!</p>
         <p>Bleibt fit und gesund :)</p>
-    </div>
+    </div> *@
 
-    @* <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
+    <h4 class="text-info">Mein neuer Lauf <span class="@badgeClass">@badgeInfo</span></h4>
     <RunFormComponent Walk="Walk"
                   editContext="editContext"
                   Run="Run"
                   OnValidSubmit="HandleValidSubmit"
                   OnInvalidSubmit="HandleInvalidSubmit">
-    </RunFormComponent> *@
+    </RunFormComponent>
     <br />
     <TableComponent @ref="tableComponent" walkGuid="@walkGuid"></TableComponent>
 }
@@ -106,7 +106,7 @@
         Walk.SetNextAndCurrentPoint();
         Run.Walk = walkGuid;
         Run.School = Walk.Schools.First().Name;
-        SponsorMoney = await Http.GetFromJsonAsync<double>($"WwwSponsor/{walkGuid}");
+        // SponsorMoney = await Http.GetFromJsonAsync<double>($"WwwSponsor/{walkGuid}");
     }
 
     private async Task HandleValidSubmit()
@@ -130,6 +130,7 @@
                 badgeClass = "badge bg-warning";
                 badgeInfo = $"Fehler beim übertragen der Daten. {response.StatusCode}";
                 Feedback = null;
+                isLoading = false;
                 StateHasChanged();
                 return;
             }
@@ -166,6 +167,8 @@
                 mapComponent.ShowCurrent(Feedback);
                 tableComponent.Reset(Feedback.CurrentDistance);
                 await _js.InvokeVoidAsync("Scroll", "mapid");
+                Walk.CurrentDistance += Run.Distance;
+                Walk.SetNextAndCurrentPoint();
             }
         }
         isLoading = false;

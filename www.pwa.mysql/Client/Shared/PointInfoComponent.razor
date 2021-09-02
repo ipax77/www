@@ -6,15 +6,16 @@
     @if (walkPoint != null)
     {
         <div class="card">
-            <span class="oi oi-x text-danger bg-light pointer position-absolute p-2 p-sm-1" @onclick="e => onCloseRequest.InvokeAsync()" style="font-size: 30px; right: 0"></span>
-            <img class="card-img-top" src="@($"images/{walkPoint.Name.Replace(" ", "")}-min.jpg")" alt="@walkPoint.Name">
+            <span class="oi oi-x text-danger bg-light pointer position-absolute p-2 p-sm-1"
+            @onclick="e => onCloseRequest.InvokeAsync()" style="font-size: 30px; right: 0"></span>
+            <img class="card-img-top" src="@GetImgSrc(walkPoint.Name)" alt="@walkPoint.Name">
             @if (String.IsNullOrEmpty(walkPoint.ImageCopyRightLink))
             {
                 <small class="text-end">@walkPoint.ImageCopyRight</small>
-            } else
+            }
+            else
             {
-                var rc = walkPoint.ImageCopyRight.Split("<LINK>");
-                <small class="text-end">@rc[0]<a href="@walkPoint.ImageCopyRightLink">@rc[1]</a></small>
+                <small class="text-end">@walkPoint.ImageCopyRight <a href="@walkPoint.ImageCopyRightLink">Link</a></small>
             }
             <div class="card-body">
                 <h5 class="card-title">@walkPoint.Name</h5>
@@ -44,6 +45,11 @@
     {
         LoadData(Point);
         return base.OnInitializedAsync();
+    }
+
+    public static string GetImgSrc(string name)
+    {
+        return $"images/{name.ToLower().Replace(" ", "")}.jpg";
     }
 
     public async Task LoadData(string point)

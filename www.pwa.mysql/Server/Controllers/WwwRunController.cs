@@ -188,15 +188,15 @@ namespace www.pwa.Server.Controllers
         [RequestLimit("Submit", NoOfRequest = 5, Seconds = 10)]
         public async Task<ActionResult<WwwFeedback>> Submit(EntityRunFormData data)
         {
-            return new WwwFeedback() {
-                Error = "Der Lauf ist beendet."
-            };
+            // return new WwwFeedback() {
+            //     Error = "Der Lauf ist beendet."
+            // };
 
-            // WwwFeedback feedback = await dbService.Submit(context, data);
-            // if (feedback == null)
-            //     return NotFound();
-            // else
-            //     return feedback;
+            WwwFeedback feedback = await dbService.Submit(context, data);
+            if (feedback == null)
+                return NotFound();
+            else
+                return feedback;
         }
 
         [HttpGet("info/{point}")]

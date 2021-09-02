@@ -128,6 +128,7 @@ namespace www.pwa.Server.Services
                     
                     if (bulk == false)
                     {
+                        entity.hasSponsors = true;
                         await context.SaveChangesAsync();
                         if (entity.hasSponsors)
                             return await GetFeedback(context, walk, school, wwwClass, entity);

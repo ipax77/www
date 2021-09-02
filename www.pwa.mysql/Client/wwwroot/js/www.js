@@ -4,7 +4,7 @@ window.LoadMap = () => {
         maxBoundsViscosity: 1.0
     });
   window.map.on("load", loaded);
-  window.map.setView([51.318008, 9.468067], 6);
+  window.map.setView([47,5, 10.0], 9);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

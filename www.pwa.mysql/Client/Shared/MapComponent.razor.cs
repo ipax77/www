@@ -77,7 +77,7 @@ namespace www.pwa.Client.Shared
             if (wPoint != null)
             {
                 await _js.InvokeVoidAsync("ClearLines");
-                await _js.InvokeVoidAsync("FlyTo", wPoint.Latitude, wPoint.Longitude, 9);
+                await _js.InvokeVoidAsync("FlyTo", wPoint.Latitude, wPoint.Longitude, 11);
                 if (pointInfoComponent != null)
                 {
                     await pointInfoComponent.LoadData(point);
